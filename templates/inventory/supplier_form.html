@@ -5,95 +5,176 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1 class="my-4">{% if supplier %}Edit Supplier{% else %}Add Supplier{% endif %}</h1>
-    <form method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="{{ form.name.id_for_label }}">Supplier Name*</label>
-            {{ form.name }}
-            {% if form.name.errors %}
-                <div class="text-danger">{{ form.name.errors }}</div>
-            {% endif %}
+<div class="container mx-auto px-4 py-6 max-w-4xl">
+  <div class="bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-[10px_10px_30px_#d4d4d4,-10px_-10px_30px_#ffffff] dark:shadow-[10px_10px_30px_#1a1a1a,-10px_-10px_30px_#2a2a2a] p-8 transition-all duration-300">
+    <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">
+      {% if supplier %}Edit Supplier{% else %}Add Supplier{% endif %}
+    </h1>
+    
+    <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {% csrf_token %}
+      
+      <!-- Left Column -->
+      <div class="space-y-5">
+        <div class="form-field">
+          <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Supplier Name<span class="text-red-500">*</span>
+          </label>
+          {{ form.name }}
+          {% if form.name.errors %}
+            <div class="text-red-500 text-xs mt-1">{{ form.name.errors }}</div>
+          {% endif %}
         </div>
-        <div class="form-group">
-            <label for="{{ form.code.id_for_label }}">Supplier Code*</label>
-            {{ form.code }}
-            {% if form.code.errors %}
-                <div class="text-danger">{{ form.code.errors }}</div>
-            {% endif %}
+        
+        <div class="form-field">
+          <label for="{{ form.code.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Supplier Code<span class="text-red-500">*</span>
+          </label>
+          {{ form.code }}
+          {% if form.code.errors %}
+            <div class="text-red-500 text-xs mt-1">{{ form.code.errors }}</div>
+          {% endif %}
         </div>
-        <div class="form-group">
-            <label for="{{ form.contact_person.id_for_label }}">Contact Person</label>
-            {{ form.contact_person }}
-            {% if form.contact_person.errors %}
-                <div class="text-danger">{{ form.contact_person.errors }}</div>
-            {% endif %}
+        
+        <div class="form-field">
+          <label for="{{ form.contact_person.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Contact Person
+          </label>
+          {{ form.contact_person }}
+          {% if form.contact_person.errors %}
+            <div class="text-red-500 text-xs mt-1">{{ form.contact_person.errors }}</div>
+          {% endif %}
         </div>
-        <div class="form-group">
-            <label for="{{ form.email.id_for_label }}">Email*</label>
-            {{ form.email }}
-            {% if form.email.errors %}
-                <div class="text-danger">{{ form.email.errors }}</div>
-            {% endif %}
+        
+        <div class="form-field">
+          <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Email<span class="text-red-500">*</span>
+          </label>
+          {{ form.email }}
+          {% if form.email.errors %}
+            <div class="text-red-500 text-xs mt-1">{{ form.email.errors }}</div>
+          {% endif %}
         </div>
-        <div class="form-group">
-            <label for="{{ form.phone.id_for_label }}">Phone</label>
-            {{ form.phone }}
-            {% if form.phone.errors %}
-                <div class="text-danger">{{ form.phone.errors }}</div>
-            {% endif %}
+        
+        <div class="form-field">
+          <label for="{{ form.phone.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Phone
+          </label>
+          {{ form.phone }}
+          {% if form.phone.errors %}
+            <div class="text-red-500 text-xs mt-1">{{ form.phone.errors }}</div>
+          {% endif %}
         </div>
-        <div class="form-group">
-            <label for="{{ form.address.id_for_label }}">Address</label>
-            {{ form.address }}
-            {% if form.address.errors %}
-                <div class="text-danger">{{ form.address.errors }}</div>
-            {% endif %}
+        
+        <div class="form-field">
+          <label for="{{ form.address.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Address
+          </label>
+          {{ form.address }}
+          {% if form.address.errors %}
+            <div class="text-red-500 text-xs mt-1">{{ form.address.errors }}</div>
+          {% endif %}
         </div>
-        <div class="form-group">
-            <label for="{{ form.tax_number.id_for_label }}">Tax Number</label>
-            {{ form.tax_number }}
-            {% if form.tax_number.errors %}
-                <div class="text-danger">{{ form.tax_number.errors }}</div>
-            {% endif %}
+      </div>
+      
+      <!-- Right Column -->
+      <div class="space-y-5">
+        <div class="form-field">
+          <label for="{{ form.tax_number.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Tax Number
+          </label>
+          {{ form.tax_number }}
+          {% if form.tax_number.errors %}
+            <div class="text-red-500 text-xs mt-1">{{ form.tax_number.errors }}</div>
+          {% endif %}
         </div>
-        <div class="form-group">
-            <label for="{{ form.credit_limit.id_for_label }}">Credit Limit</label>
-            {{ form.credit_limit }}
-            {% if form.credit_limit.errors %}
-                <div class="text-danger">{{ form.credit_limit.errors }}</div>
-            {% endif %}
+        
+        <div class="form-field">
+          <label for="{{ form.credit_limit.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Credit Limit
+          </label>
+          {{ form.credit_limit }}
+          {% if form.credit_limit.errors %}
+            <div class="text-red-500 text-xs mt-1">{{ form.credit_limit.errors }}</div>
+          {% endif %}
         </div>
-        <div class="form-group">
-            <label for="{{ form.credit_period.id_for_label }}">Credit Period (days)*</label>
-            {{ form.credit_period }}
-            {% if form.credit_period.errors %}
-                <div class="text-danger">{{ form.credit_period.errors }}</div>
-            {% endif %}
+        
+        <div class="form-field">
+          <label for="{{ form.credit_period.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Credit Period (days)<span class="text-red-500">*</span>
+          </label>
+          {{ form.credit_period }}
+          {% if form.credit_period.errors %}
+            <div class="text-red-500 text-xs mt-1">{{ form.credit_period.errors }}</div>
+          {% endif %}
         </div>
-        <div class="form-group form-check">
-            {{ form.is_active }}
-            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">Active Supplier</label>
+        
+        <div class="form-field">
+          <label for="{{ form.rating.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Rating
+          </label>
+          {{ form.rating }}
+          {% if form.rating.errors %}
+            <div class="text-red-500 text-xs mt-1">{{ form.rating.errors }}</div>
+          {% endif %}
         </div>
-        <div class="form-group">
-            <label for="{{ form.rating.id_for_label }}">Rating</label>
-            {{ form.rating }}
-            {% if form.rating.errors %}
-                <div class="text-danger">{{ form.rating.errors }}</div>
-            {% endif %}
+        
+        <div class="form-field flex items-center space-x-2 mt-6">
+          {{ form.is_active }}
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300" for="{{ form.is_active.id_for_label }}">
+            Active Supplier
+          </label>
         </div>
-        <div class="form-group">
-            <label for="{{ form.notes.id_for_label }}">Notes</label>
-            {{ form.notes }}
-            {% if form.notes.errors %}
-                <div class="text-danger">{{ form.notes.errors }}</div>
-            {% endif %}
+        
+        <div class="form-field mt-4">
+          <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Notes
+          </label>
+          {{ form.notes }}
+          {% if form.notes.errors %}
+            <div class="text-red-500 text-xs mt-1">{{ form.notes.errors }}</div>
+          {% endif %}
         </div>
-        <a href="{% url 'inventory:supplier_list' %}" class="btn btn-outline">Cancel</a>
-        <button type="submit" class="btn btn-primary">
-            {% if supplier %}Update Supplier{% else %}Save Supplier{% endif %}
+      </div>
+      
+      <!-- Button Row - Full Width -->
+      <div class="col-span-1 md:col-span-2 flex justify-end space-x-4 mt-6">
+        <a href="{% url 'inventory:supplier_list' %}" 
+           class="px-5 py-2.5 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">
+          Cancel
+        </a>
+        <button type="submit" 
+                class="px-5 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+          {% if supplier %}Update Supplier{% else %}Save Supplier{% endif %}
         </button>
+      </div>
     </form>
+  </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Style all text inputs, number inputs, and select fields
+    const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="number"], input[type="tel"], select, textarea');
+    inputs.forEach(input => {
+      input.classList.add('w-full', 'p-3', 'rounded-lg', 'border', 'border-gray-300', 
+        'dark:border-gray-600', 'bg-white', 'dark:bg-gray-700', 'text-gray-700', 
+        'dark:text-gray-200', 'focus:ring-2', 'focus:ring-blue-500', 'focus:border-transparent', 
+        'shadow-inner', 'transition-all', 'duration-300');
+    });
+    
+    // Style checkboxes specifically
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+      checkbox.classList.add('h-5', 'w-5', 'rounded', 'border-gray-300', 'dark:border-gray-600', 
+        'text-blue-500', 'focus:ring-blue-500', 'focus:ring-opacity-50', 'transition-all', 'duration-300');
+    });
+    
+    // Style textarea specifically for larger height
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(textarea => {
+      textarea.classList.add('h-32');
+    });
+  });
+</script>
 {% endblock %}
