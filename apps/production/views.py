@@ -468,7 +468,7 @@ def batch_update(request, pk):
     else:
         batch_form = ProductionBatchForm(instance=batch)
         
-    return render(request, 'production/update_batch_details.html', {
+    return render(request, 'production/update_batch_form.html', {
         'batch_form': batch_form,
         'batch': batch,
         'title': 'Update Production Batch'
