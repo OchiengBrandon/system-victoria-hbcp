@@ -1,4 +1,17 @@
-# Gradle files
+# Django specific files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# SQLite database files
+db.sqlite3
+
+# Media and static files
+media/
+staticfiles/
+
+# Gradle files (if applicable)
 .gradle/
 build/
 
@@ -31,3 +44,6 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Environment variables
+.env
