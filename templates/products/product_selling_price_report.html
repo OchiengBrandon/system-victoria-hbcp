@@ -1083,11 +1083,7 @@
                         <div class="info-value">${{ calculation_details.total_cost|floatformat:2 }}</div>
                         <div class="info-detail">Combined employee and material costs</div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">Cost Per Unit</div>
-                        <div class="info-value">${{ calculation_details.total_cost|divide:calculation_details.total_quantity_produced|floatformat:2 }}</div>
-                        <div class="info-detail">Base production cost per unit</div>
-                    </div>
+                   
                     <div class="info-item">
                         <div class="info-label">Markup</div>
                         <div class="info-value">20%</div>
@@ -1117,14 +1113,7 @@
                         <div class="breakdown-label">Total Units Produced</div>
                         <div class="breakdown-value">{{ calculation_details.total_quantity_produced|floatformat:0 }}</div>
                     </div>
-                    <div class="breakdown-item">
-                        <div class="breakdown-label">Base Cost Per Unit</div>
-                        <div class="breakdown-value">${{ calculation_details.total_cost|divide:calculation_details.total_quantity_produced|floatformat:2 }}</div>
-                    </div>
-                    <div class="breakdown-item">
-                        <div class="breakdown-label">Markup (20%)</div>
-                        <div class="breakdown-value">${{ calculation_details.total_cost|divide:calculation_details.total_quantity_produced|multiply:0.2|floatformat:2 }}/unit</div>
-                    </div>
+                    
                     <div class="breakdown-item">
                         <div class="breakdown-label">Final Selling Price</div>
                         <div class="breakdown-value">${{ current_selling_price|floatformat:2 }}</div>
