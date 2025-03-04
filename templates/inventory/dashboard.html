@@ -103,7 +103,6 @@
             </div>
         </div>
 
-        <!-- New Category Management Section -->
         <div class="dashboard-card category-card">
             <div class="card-header">
                 <h3><i class="fas fa-tags"></i> Category Management</h3>
@@ -114,6 +113,21 @@
                 </a>
                 <a href="{% url 'inventory:category_create' %}" class="dashboard-link">
                     <i class="fas fa-plus-circle"></i> Add Category
+                </a>
+            </div>
+        </div>
+
+        <!-- New Stock Transaction Section -->
+        <div class="dashboard-card stock-transaction-card">
+            <div class="card-header">
+                <h3><i class="fas fa-exchange-alt"></i> Stock Adjustements</h3>
+            </div>
+            <div class="card-content">
+                <a href="{% url 'inventory:stock_adjustment_list' %}" class="dashboard-link">
+                    <i class="fas fa-list"></i> Adjustment List
+                </a>
+                <a href="{% url 'inventory:stock_adjustment_create' %}" class="dashboard-link">
+                    <i class="fas fa-plus-circle"></i> Adjust Stock
                 </a>
             </div>
         </div>
