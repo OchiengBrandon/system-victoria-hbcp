@@ -120,7 +120,6 @@ def category_delete(request, pk):
     return render(request, 'products/category_delete_confirm.html', {'category': category})
 
 # Product Selling Price Report View
-
 @login_required
 @permission_required('production.view_product')
 def product_selling_price_report(request, product_id):

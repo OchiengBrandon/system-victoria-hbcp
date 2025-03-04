@@ -126,9 +126,9 @@
             datasets: [{
                 label: 'Cost in KES',
                 data: [
-                    "{{ calculation_details.total_employee_cost }}",  // Removed formatting for accurate numeric data
-                    "{{ calculation_details.total_material_cost }}",  // Removed formatting for accurate numeric data
-                    "{{ calculation_details.total_cost }}"  // Removed formatting for accurate numeric data
+                    "{{ calculation_details.total_employee_cost|floatformat:2|to_kes }}",
+                    "{{ calculation_details.total_material_cost|floatformat:2|to_kes }}",
+                    "{{ calculation_details.total_cost|floatformat:2|to_kes }}",
                 ],
                 backgroundColor: [
                     'rgba(54, 162, 235, 0.6)',
