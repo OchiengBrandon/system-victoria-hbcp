@@ -485,7 +485,7 @@ def batch_update(request, pk):
         material_formset = BatchMaterialUsageFormSet(queryset=BatchMaterialUsage.objects.filter(batch=batch))
         employee_formset = EmployeeCostFormSet(queryset=EmployeeCost.objects.filter(batch=batch))
         
-    return render(request, 'production/batch_form.html', {
+    return render(request, 'production/update_batch_form.html', {
         'batch_form': batch_form,
         'material_formset': material_formset,
         'employee_formset': employee_formset,

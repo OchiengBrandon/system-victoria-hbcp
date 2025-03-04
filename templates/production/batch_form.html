@@ -7,15 +7,38 @@
     <form method="post" class="bg-white p-4 rounded shadow-md mt-4">
         {% csrf_token %}
         
-        {% if form.non_field_errors %}
+        {% if batch_form.non_field_errors %}
             <div class="text-red-600 mb-4">
-                {{ form.non_field_errors }}
+                {{ batch_form.non_field_errors }}
             </div>
         {% endif %}
 
-        {{ batch_form.as_p }}
+        <div class="mb-4">
+            <h4 class="text-lg font-semibold">Batch Details</h4>
+            {{ batch_form.as_p }}
+        </div>
 
-        <button type="submit" class="btn btn-primary">Create Batch</button>
+        <div class="mb-4">
+            <h4 class="text-lg font-semibold">Material Usage</h4>
+            {{ material_formset.management_form }}
+            {% for form in material_formset %}
+                <div class="formset-field border p-3 mb-3 rounded">
+                    {{ form.as_p }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-4">
+            <h4 class="text-lg font-semibold">Employee Costs</h4>
+            {{ employee_formset.management_form }}
+            {% for form in employee_formset %}
+                <div class="formset-field border p-3 mb-3 rounded">
+                    {{ form.as_p }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Batch</button>
         <a href="{% url 'production:batch_list' %}" class="btn btn-secondary">Back to Batch List</a>
     </form>
 </div>
