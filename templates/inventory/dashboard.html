@@ -4,8 +4,6 @@
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-
-
 {% endblock %}
 
 {% block content %}
@@ -104,8 +102,22 @@
                 </a>
             </div>
         </div>
-    </div>
 
+        <!-- New Category Management Section -->
+        <div class="dashboard-card category-card">
+            <div class="card-header">
+                <h3><i class="fas fa-tags"></i> Category Management</h3>
+            </div>
+            <div class="card-content">
+                <a href="{% url 'inventory:category_list' %}" class="dashboard-link">
+                    <i class="fas fa-list"></i> View Categories
+                </a>
+                <a href="{% url 'inventory:category_create' %}" class="dashboard-link">
+                    <i class="fas fa-plus-circle"></i> Add Category
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
