@@ -3,39 +3,50 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>Welcome Back</h2>
-    <form method="post">
+<div class="auth-card animated">
+    <h1 class="animated delay-1">Welcome Back</h1>
+    <form id="loginForm" method="post" class="animated delay-2">
         {% csrf_token %}
+        {% if form.errors %}
+        <div class="error-message">
+            Your username or password is incorrect. Please try again.
+        </div>
+        {% endif %}
         <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" required autocomplete="email" autofocus>
+            <label for="username">Email Address</label>
+            <input type="email" id="username" name="username" required autocomplete="email" autofocus>
         </div>
         <div class="form-group">
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required autocomplete="current-password">
+            <i class="fas fa-eye password-toggle" id="passwordToggle"></i>
         </div>
-        <button type="submit">Sign In</button>
-        <p>Don't have an account? <a href="{% url 'accounts:employee_create' %}">Create Account</a></p>
+        <div class="form-group animated delay-3">
+            <button type="submit" class="btn btn-primary" id="loginButton">Sign In</button>
+        </div>
+        <p>Forgot password? <a href="#">Contact Admin</a></p>
     </form>
+    <div class="form-footer animated delay-5">
+        By continuing, you agree to Homabay Concrete's <a href="#">Terms of Use</a> and <a href="#">Privacy Policy</a>.
+    </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Add custom animations for the login form
     document.addEventListener('DOMContentLoaded', () => {
-        const container = document.querySelector('.container');
-        container.style.opacity = '0';
-        container.style.transform = 'scale(0.95)';
-        container.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        // Custom animations for the login form
+        const authCard = document.querySelector('.auth-card');
+        authCard.style.opacity = '0';
+        authCard.style.transform = 'scale(0.95)';
+        authCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
         
         setTimeout(() => {
-            container.style.opacity = '1';
-            container.style.transform = 'scale(1)';
+            authCard.style.opacity = '1';
+            authCard.style.transform = 'scale(1)';
         }, 100);
         
-        // Add input focus effects
+        // Input focus effects
         const inputs = document.querySelectorAll('input');
         inputs.forEach(input => {
             input.addEventListener('focus', () => {
@@ -47,6 +58,14 @@
                     input.parentElement.classList.remove('focused');
                 }
             });
+        });
+
+        // Password toggle functionality
+        const passwordToggle = document.getElementById('passwordToggle');
+        passwordToggle.addEventListener('click', () => {
+            const type = passwordInput.type === 'password' ? 'text' : 'password';
+            passwordInput.type = type;
+            passwordToggle.classList.toggle('fa-eye-slash');
         });
     });
 </script>

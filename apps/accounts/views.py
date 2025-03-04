@@ -97,11 +97,13 @@ def profile_edit(request):
         'title': 'Edit Profile'
     })
 
+
 # User login view
 def user_login(request):
     if request.method == 'POST':
-        email = request.POST['email']
-        password = request.POST['password']
+        email = request.POST.get('username')  # Adjusted to use 'username' as per your form
+        password = request.POST.get('password')
+        
         user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
@@ -109,6 +111,7 @@ def user_login(request):
             return redirect('accounts:employee_list')  # Redirect to employee list or dashboard
         else:
             messages.error(request, 'Invalid email or password.')
+    
     return render(request, 'accounts/auth/login.html')
 
 # Password reset view
