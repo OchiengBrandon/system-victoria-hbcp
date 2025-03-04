@@ -19,6 +19,8 @@ urlpatterns = [
     
     # Production Batch URLs
     path('batch/create/<int:schedule_pk>/', views.batch_create, name='batch_create'),
+    ## FIX IT LATER
+    path('batches/', views.batch_create, name='batch_list'),
     path('batch/<int:pk>/', views.batch_detail, name='batch_detail'),
     path('batch/<int:pk>/update/', views.batch_update, name='batch_update'),
     
