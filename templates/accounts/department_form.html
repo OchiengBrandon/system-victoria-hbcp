@@ -1,12 +1,55 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="container mx-auto p-6">
-    <h1 class="text-2xl font-bold">{{ title }}</h1>
-    <form method="POST" class="bg-white p-4 rounded shadow-md mt-4">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Save</button>
-        <a href="{% url 'accounts:department_list' %}" class="btn btn-secondary">Cancel</a>
+<div class="container mx-auto p-6 max-w-2xl">
+  <div class="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 shadow-[8px_8px_16px_#d1d1d1,-8px_-8px_16px_#ffffff] dark:shadow-[8px_8px_16px_#1c1c1c,-8px_-8px_16px_#2a2a2a] transition-all duration-300">
+    <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-5">{{ title }}</h1>
+    
+    <form method="POST" class="space-y-5">
+      {% csrf_token %}
+      
+      <div class="bg-white dark:bg-gray-700 p-5 rounded-xl shadow-inner transition-all duration-300">
+        <div class="space-y-4">
+          {{ form.as_p }}
+        </div>
+      </div>
+      
+      <div class="flex space-x-3 pt-2">
+        <button type="submit" class="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+          Save
+        </button>
+        <a href="{% url 'accounts:department_list' %}" class="px-5 py-2.5 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg shadow-md hover:shadow-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">
+          Cancel
+        </a>
+      </div>
     </form>
+  </div>
 </div>
+
+<script>
+  // Apply modern styling to Django-generated form elements
+  document.addEventListener('DOMContentLoaded', () => {
+    // Style form inputs
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+      input.classList.add('w-full', 'p-2.5', 'rounded-lg', 'border', 'border-gray-300', 
+        'dark:border-gray-600', 'bg-white', 'dark:bg-gray-700', 'text-gray-700', 
+        'dark:text-gray-200', 'focus:ring-2', 'focus:ring-blue-400', 'focus:border-transparent', 
+        'transition-all', 'duration-300');
+    });
+    
+    // Style form labels
+    const labels = document.querySelectorAll('label');
+    labels.forEach(label => {
+      label.classList.add('block', 'text-sm', 'font-medium', 'text-gray-700', 
+        'dark:text-gray-300', 'mb-1');
+    });
+    
+    // Add help text styling
+    const helpTexts = document.querySelectorAll('.helptext');
+    helpTexts.forEach(text => {
+      text.classList.add('text-xs', 'text-gray-500', 'dark:text-gray-400', 'mt-1', 'block');
+    });
+  });
+</script>
 {% endblock %}
