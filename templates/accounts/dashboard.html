@@ -4,7 +4,6 @@
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-
 {% endblock %}
 
 {% block content %}
@@ -102,10 +101,25 @@
                 </a>
             </div>
         </div>
+
+        <!-- New Department Management Section -->
+        <div class="dashboard-card department-card">
+            <div class="card-header">
+                <h3><i class="fas fa-building"></i> Department Management</h3>
+            </div>
+            <div class="card-content">
+                <a href="{% url 'accounts:department_list' %}" class="dashboard-link">
+                    <i class="fas fa-list"></i> View Departments
+                </a>
+                <a href="{% url 'accounts:department_create' %}" class="dashboard-link">
+                    <i class="fas fa-plus-circle"></i> Add Department
+                </a>
+            </div>
+        </div>
     </div>
 
     <div class="dashboard-footer">
-        
+        <!-- Footer content can go here -->
     </div>
 </div>
 
