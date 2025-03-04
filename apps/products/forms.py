@@ -17,13 +17,13 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = '__all__'
-        exclude = ['current_stock']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'minimum_stock': forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}),
             'maximum_stock': forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}),
             'reorder_point': forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}),
             'standard_cost': forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}),
+            'current_stock': forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}),
             'selling_price': forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-select'}),
         }
