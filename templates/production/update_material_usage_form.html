@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+<p>Batch: {{ batch.batch_number }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}  <!-- Render the form fields -->
+
+    <button type="submit">Update Material Usage</button>
+</form>
+
+<a href="{% url 'production:batch_detail' batch.pk %}">Cancel</a>
+
+{% endblock %}

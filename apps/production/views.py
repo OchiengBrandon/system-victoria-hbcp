@@ -262,10 +262,10 @@ def batch_create(request, schedule_pk):
     })
 
 
-# Add materials to batch
 @login_required
 @permission_required('production.add_batchmaterialusage')
 def add_materials_to_batch(request, batch_pk):
+    """Add materials to the specified batch."""
     batch = get_object_or_404(ProductionBatch, pk=batch_pk)
 
     if request.method == 'POST':
@@ -280,22 +280,16 @@ def add_materials_to_batch(request, batch_pk):
     else:
         material_formset = BatchMaterialUsageFormSet(queryset=BatchMaterialUsage.objects.none())
 
-    return render(request, 'production/materials_form.html', {
+    return render(request, 'production/add_materials_form.html', {
         'material_formset': material_formset,
         'batch': batch,
         'title': 'Add Materials to Batch'
     })
 
-from django.contrib.auth.decorators import login_required, permission_required
-from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib import messages
-from .models import BatchMaterialUsage
-from .forms import BatchMaterialUsageForm  # Ensure you have this form created
-
 @login_required
 @permission_required('production.change_batchmaterialusage')
 def material_usage_update(request, batch_pk, usage_pk):
-    # Fetch the material usage entry
+    """Update an existing material usage."""
     usage = get_object_or_404(BatchMaterialUsage, pk=usage_pk)
 
     # Ensure the usage belongs to the specified batch
@@ -317,10 +311,11 @@ def material_usage_update(request, batch_pk, usage_pk):
     else:
         form = BatchMaterialUsageForm(instance=usage)  # Populate with existing data for GET request
 
-    return render(request, 'production/materials_form.html', {
+    return render(request, 'production/update_material_usage_form.html', {
         'form': form,
         'usage': usage,
         'batch': batch,  # Ensure the batch is passed to the template
+        'title': 'Update Material Usage'  # Set a title for better context
     })
 # Delete material usage
 @login_required
@@ -375,9 +370,6 @@ def add_employee_costs_to_batch(request, batch_pk):
                 messages.success(request, 'Employee costs added successfully.')
                 return redirect('production:batch_detail', pk=batch.pk)
 
-        else:
-            messages.error(request, 'Please correct the errors below.')
-
     else:
         employee_formset = EmployeeCostFormSet(queryset=EmployeeCost.objects.none())
 
@@ -387,10 +379,12 @@ def add_employee_costs_to_batch(request, batch_pk):
         'title': 'Add Employee Costs to Batch'
     })
 
-# Update employee cost
+
+# Employee Cost update
 @login_required
 @permission_required('production.change_employeecost')
 def employee_cost_update(request, batch_pk, cost_pk):
+    """Update an existing employee cost."""
     # Fetch the employee cost entry
     cost = get_object_or_404(EmployeeCost, pk=cost_pk)
 
@@ -413,10 +407,11 @@ def employee_cost_update(request, batch_pk, cost_pk):
     else:
         form = EmployeeCostForm(instance=cost)  # Populate with existing data for GET request
 
-    return render(request, 'production/employee_costs_form.html', {
+    return render(request, 'production/employee_cost_update_form.html', {
         'form': form,
         'cost': cost,
         'batch': batch,  # Ensure the batch is passed to the template
+        'title': 'Update Employee Cost'  # Set a title for better context
     })
 
 # Delete employee cost
