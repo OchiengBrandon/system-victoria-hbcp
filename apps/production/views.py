@@ -449,32 +449,17 @@ def batch_detail(request, pk):
     }
     return render(request, 'production/batch_detail.html', context)
 
+# Batch Update
 @login_required
 @permission_required('production.change_productionbatch')
 def batch_update(request, pk):
     batch = get_object_or_404(ProductionBatch, pk=pk)
-    schedule = batch.schedule 
 
     if request.method == 'POST':
         batch_form = ProductionBatchForm(request.POST, instance=batch)
-        material_formset = BatchMaterialUsageFormSet(request.POST, queryset=BatchMaterialUsage.objects.filter(batch=batch))
-        employee_formset = EmployeeCostFormSet(request.POST, queryset=EmployeeCost.objects.filter(batch=batch))
 
-        if batch_form.is_valid() and material_formset.is_valid() and employee_formset.is_valid():
+        if batch_form.is_valid():
             batch_form.save()
-
-            # Update material usage
-            for form in material_formset:
-                material_usage = form.save(commit=False)
-                material_usage.batch = batch
-                material_usage.save()
-
-            # Update employee costs
-            for form in employee_formset:
-                employee_cost = form.save(commit=False)
-                employee_cost.batch = batch
-                employee_cost.save()
-
             messages.success(request, 'Batch updated successfully.')
             return redirect('production:batch_detail', pk=batch.pk)
         else:
@@ -482,15 +467,10 @@ def batch_update(request, pk):
 
     else:
         batch_form = ProductionBatchForm(instance=batch)
-        material_formset = BatchMaterialUsageFormSet(queryset=BatchMaterialUsage.objects.filter(batch=batch))
-        employee_formset = EmployeeCostFormSet(queryset=EmployeeCost.objects.filter(batch=batch))
         
-    return render(request, 'production/update_batch_form.html', {
+    return render(request, 'production/update_batch_details.html', {
         'batch_form': batch_form,
-        'material_formset': material_formset,
-        'employee_formset': employee_formset,
         'batch': batch,
-        'schedule': schedule,
         'title': 'Update Production Batch'
     })
 
