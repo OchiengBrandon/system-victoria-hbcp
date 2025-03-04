@@ -87,6 +87,13 @@
                 {% endif %}
             </div>
             <div class="col-md-6 mb-3">
+                <label for="{{ form.current_stock.id_for_label }}" class="form-label">Current Stock</label>
+                <input type="number" name="current_stock" class="form-control" id="{{ form.current_stock.id_for_label }}" value="{{ form.current_stock.value }}" step="0.01" required>
+                {% if form.current_stock.errors %}
+                    <div class="text-danger">{{ form.current_stock.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
                 <label for="{{ form.maximum_stock.id_for_label }}" class="form-label">Maximum Stock</label>
                 <input type="number" name="maximum_stock" class="form-control" id="{{ form.maximum_stock.id_for_label }}" value="{{ form.maximum_stock.value }}" step="0.01" required>
                 {% if form.maximum_stock.errors %}
