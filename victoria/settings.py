@@ -30,7 +30,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 DEBUG = True
 
 # Allowed hosts
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS','homabayconcreteproducts.com','www.homabayconcreteproducts.com').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS','www.homabayconcreteproducts.com').split(',')
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
