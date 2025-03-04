@@ -1025,15 +1025,7 @@
                                                 <div class="detail-label">Quantity Rejected</div>
                                                 <div class="detail-value">{{ batch.quantity_rejected|floatformat:0 }} units</div>
                                             </div>
-                                            <div class="detail-row">
-                                                <div class="detail-label">Rejection Rate</div>
-                                                <div class="detail-value">
-                                                    {{ batch.quantity_rejected|divide:batch.quantity_produced|multiply:100|floatformat:1 }}%
-                                                    <div class="progress-container">
-                                                        <div class="progress-bar" style="width: {{ batch.quantity_rejected|divide:batch.quantity_produced|multiply:100|floatformat:1 }}%"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            
                                             
                                             {% if batch.quality_check_results %}
                                             <h4 style="margin-top: 15px; margin-bottom: 10px;">Quality Checks</h4>
