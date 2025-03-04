@@ -159,27 +159,22 @@ def employee_list(request):
     }
     return render(request, 'accounts/employee_list.html', context)
 
+
+# Create Employee
 @login_required
 @permission_required('accounts.add_employee')
 def employee_create(request):
     if request.method == 'POST':
-        user_form = CustomUserCreationForm(request.POST)
         employee_form = EmployeeForm(request.POST)
         
-        if user_form.is_valid() and employee_form.is_valid():
-            user = user_form.save()
-            employee = employee_form.save(commit=False)
-            employee.user = user  # This line may be removed if no user field exists
-            employee.save()
-            
+        if employee_form.is_valid():
+            employee = employee_form.save()  # Save the employee directly
             messages.success(request, 'Employee created successfully.')
             return redirect('accounts:employee_detail', pk=employee.pk)
     else:
-        user_form = CustomUserCreationForm()
         employee_form = EmployeeForm()
 
     return render(request, 'accounts/employee_form.html', {
-        'user_form': user_form,
         'employee_form': employee_form,
         'title': 'Create New Employee'
     })
