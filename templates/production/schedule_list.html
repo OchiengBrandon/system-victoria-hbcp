@@ -1,0 +1,69 @@
+<!-- templates/production/schedule_list.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Production Schedules</h1>
+
+<form method="get">
+    <input type="text" name="search" placeholder="Search..." value="{{ search_query }}">
+    <label for="production_line">Production Line:</label>
+    <select name="production_line" id="production_line">
+        <option value="">All Production Lines</option>
+        {% for line in production_lines %}
+            <option value="{{ line.pk }}" {% if line.pk|stringformat:"s" == production_line_filter %}selected{% endif %}>{{ line.name }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Filter</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Production Line</th>
+            <th>Product</th>
+            <th>Quantity Planned</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for schedule in schedules %}
+            <tr>
+                <td>{{ schedule.production_line.name }}</td>
+                <td>{{ schedule.product.name }}</td>
+                <td>{{ schedule.quantity_planned }}</td>
+                <td>{{ schedule.start_time }}</td>
+                <td>{{ schedule.end_time }}</td>
+                <td>
+                    <a href="{% url 'production:schedule_detail' schedule.pk %}">View</a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6">No schedules found.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if schedules.has_previous %}
+            <a href="?page=1&search={{ search_query }}&production_line={{ production_line_filter }}">&laquo; first</a>
+            <a href="?page={{ schedules.previous_page_number }}&search={{ search_query }}&production_line={{ production_line_filter }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ schedules.number }} of {{ schedules.paginator.num_pages }}.
+        </span>
+
+        {% if schedules.has_next %}
+            <a href="?page={{ schedules.next_page_number }}&search={{ search_query }}&production_line={{ production_line_filter }}">next</a>
+            <a href="?page={{ schedules.paginator.num_pages }}&search={{ search_query }}&production_line={{ production_line_filter }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+{% endblock %}

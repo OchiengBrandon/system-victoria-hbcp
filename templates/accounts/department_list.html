@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mx-auto p-6">
+    <h1 class="text-2xl font-bold">Departments</h1>
+    <a href="{% url 'accounts:department_create' %}" class="btn btn-primary">Create Department</a>
+    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 mt-4">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Description</th>
+                <th>Manager</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for department in departments %}
+            <tr>
+                <td>{{ department.name }}</td>
+                <td>{{ department.code }}</td>
+                <td>{{ department.description }}</td>
+                <td>
+                    {% if department.manager %}
+                        {{ department.manager.get_full_name }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'accounts:department_update' department.pk %}" class="btn btn-secondary">Edit</a>
+                    <a href="{% url 'accounts:department_delete' department.pk %}" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No departments available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

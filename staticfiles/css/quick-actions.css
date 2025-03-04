@@ -1,0 +1,74 @@
+/* Quick Actions Dropdown Styles */
+.quick-actions-dropdown {
+    position: absolute;
+    right: 0;
+    margin-top: 0.5rem;
+    width: 16rem; /* 64 units in Tailwind CSS */
+    border-radius: 0.5rem; /* rounded-lg */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: white; /* bg-white */
+    border: 1px solid rgba(0, 0, 0, 0.1); /* ring-1 ring-black ring-opacity-5 */
+    z-index: 50;
+}
+
+.quick-actions-dropdown .header {
+    padding: 1rem; /* px-4 py-3 */
+}
+
+.quick-actions-dropdown .header h3 {
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500; /* font-medium */
+    color: #4B5563; /* text-gray-700 */
+}
+
+.quick-actions-dropdown .action {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem; /* px-4 py-2 */
+    font-size: 0.875rem; /* text-sm */
+    color: #4B5563; /* text-gray-700 */
+    transition: background-color 0.2s;
+}
+
+.quick-actions-dropdown .action:hover {
+    background-color: #F3F4F6; /* hover:bg-gray-100 */
+}
+
+.quick-actions-dropdown .action i {
+    margin-right: 0.75rem; /* mr-3 */
+}
+
+.quick-actions-dropdown .action.text-green {
+    color: #10B981; /* text-green-500 */
+}
+
+.quick-actions-dropdown .action.text-blue {
+    color: #3B82F6; /* text-blue-500 */
+}
+
+.quick-actions-dropdown .action.text-purple {
+    color: #A855F7; /* text-purple-500 */
+}
+
+.quick-actions-dropdown .action.text-orange {
+    color: #F97316; /* text-orange-500 */
+}
+
+@media (prefers-color-scheme: dark) {
+    .quick-actions-dropdown {
+        background-color: #2D3748; /* dark:bg-gray-800 */
+        border-color: rgba(255, 255, 255, 0.1); /* dark:ring-white dark:ring-opacity-10 */
+    }
+
+    .quick-actions-dropdown .header h3 {
+        color: #E2E8F0; /* dark:text-gray-200 */
+    }
+
+    .quick-actions-dropdown .action {
+        color: #E2E8F0; /* dark:text-gray-300 */
+    }
+
+    .quick-actions-dropdown .action:hover {
+        background-color: #4A5568; /* dark:hover:bg-gray-700 */
+    }
+}

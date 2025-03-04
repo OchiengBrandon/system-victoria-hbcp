@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="formula-form-container mt-5">
+    <h1 class="mb-4">
+        {% if formula %}
+            Update Formula for {{ product.name }}
+        {% else %}
+            Create a New Formula for {{ product.name }}
+        {% endif %}
+    </h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-4">
+            <div class="form-group">
+                {{ form.as_p }}
+            </div>
+
+            <h2 class="text-lg font-semibold mb-4">Formula Items</h2>
+            <div id="formset-container">
+                {{ formset.management_form }}
+                {% for form in formset.forms %}
+                    <div class="mb-4 border p-4 rounded">
+                        {{ form.as_p }}
+                        {% if formset.can_delete %}
+                            <div class="mb-2">
+                                <label>
+                                    <input type="checkbox" name="{{ formset.prefix }}-{{ forloop.counter0 }}-DELETE" />
+                                    Delete this item
+                                </label>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button type="button" id="add-item" class="mt-4 btn btn-primary">
+                Add Formula Item
+            </button>
+
+            <div class="mt-6">
+                <button type="submit" class="btn btn-success">
+                    {% if formula %}
+                        Update Formula
+                    {% else %}
+                        Create Formula
+                    {% endif %}
+                </button>
+                <a href="{% url 'products:product_detail' product.pk %}" class="btn btn-secondary ml-2">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('add-item').addEventListener('click', function() {
+        const formsetContainer = document.getElementById('formset-container');
+        const totalForms = formsetContainer.querySelectorAll('input[name$=TOTAL_FORMS]');
+        const currentFormCount = parseInt(totalForms[0].value);
+
+        const newForm = formsetContainer.children[currentFormCount - 1].cloneNode(true);
+        const formRegex = new RegExp(`-${currentFormCount}-`, 'g');
+
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `-${currentFormCount}-`);
+        formsetContainer.appendChild(newForm);
+        totalForms[0].value = currentFormCount + 1;
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6">Dashboard Overview</h1>
+
+    <!-- Chart Container -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">Sales Overview</h2>
+            <canvas id="salesChart"></canvas>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">Inventory Status</h2>
+            <canvas id="inventoryChart"></canvas>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">Production Metrics</h2>
+            <canvas id="productionChart"></canvas>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">Employee Performance</h2>
+            <canvas id="employeeChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const salesCtx = document.getElementById('salesChart').getContext('2d');
+    const salesChart = new Chart(salesCtx, {
+        type: 'line',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May'],
+            datasets: [{
+                label: 'Sales',
+                data: [120, 190, 300, 500, 200],
+                borderColor: '#0ea5e9',
+                backgroundColor: 'rgba(14, 165, 233, 0.2)',
+                borderWidth: 2,
+                fill: true,
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    const inventoryCtx = document.getElementById('inventoryChart').getContext('2d');
+    const inventoryChart = new Chart(inventoryCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Electronics', 'Furniture', 'Clothing', 'Toys'],
+            datasets: [{
+                label: 'Inventory',
+                data: [150, 200, 120, 90],
+                backgroundColor: ['#38bdf8', '#4c1d95', '#a78bfa', '#f59e0b'],
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    const productionCtx = document.getElementById('productionChart').getContext('2d');
+    const productionChart = new Chart(productionCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Task 1', 'Task 2', 'Task 3'],
+            datasets: [{
+                label: 'Production Tasks',
+                data: [300, 50, 150],
+                backgroundColor: ['#10b981', '#ef4444', '#f97316'],
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+
+    const employeeCtx = document.getElementById('employeeChart').getContext('2d');
+    const employeeChart = new Chart(employeeCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['John', 'Jane', 'Doe'],
+            datasets: [{
+                label: 'Employee Performance',
+                data: [65, 20, 15],
+                backgroundColor: ['#3b82f6', '#9333ea', '#f43f5e'],
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>
+{% endblock %}

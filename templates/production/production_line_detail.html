@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ production_line.name }} - Details{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ production_line.name }}</h1>
+    <p><strong>Status:</strong> {{ production_line.get_status_display }}</p>
+    <p><strong>Current Month Production:</strong> {{ production_line.current_month_production }}</p>
+    <p><strong>Next Maintenance Date:</strong> {{ production_line.next_maintenance_date }}</p>
+
+    <h2>Current Schedule</h2>
+    {% if current_schedule %}
+        <p><strong>Product:</strong> {{ current_schedule.product.name }}</p>
+        <p><strong>Start Time:</strong> {{ current_schedule.start_time }}</p>
+        <p><strong>Quantity Planned:</strong> {{ current_schedule.quantity_planned }}</p>
+        <p><strong>End Time:</strong> {{ current_schedule.end_time }}</p>  <!-- Assuming you have this field -->
+        <p><strong>Current Batch:</strong>
+            {% if current_schedule.batches.count > 0 %}
+                <ul>
+                    {% for batch in current_schedule.batches.all %}
+                        <li>{{ batch.batch_number }} - {{ batch.quantity_produced }} produced</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                No batches are currently in progress.
+            {% endif %}
+        </p>
+    {% else %}
+        <p>No current schedule.</p>
+    {% endif %}
+
+    <h2>Upcoming Schedules</h2>
+    {% if upcoming_schedules %}
+        <ul>
+            {% for schedule in upcoming_schedules %}
+                <li>
+                    <strong>{{ schedule.start_time }}:</strong> 
+                    <a href="{% url 'production:schedule_detail' pk=schedule.pk %}">{{ schedule.product.name }}</a> 
+                    (Planned Quantity: {{ schedule.quantity_planned }})
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No upcoming schedules.</p>
+    {% endif %}
+
+    <h2>Recent Maintenance</h2>
+    {% if recent_maintenance %}
+        <ul>
+            {% for log in recent_maintenance %}
+                <li>{{ log.start_time }} - {{ log.description }} (Performed by: {{ log.performed_by }})</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No recent maintenance logs.</p>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{% url 'production:production_line_update' production_line.pk %}" class="btn btn-warning">Edit</a>
+        <a href="{% url 'production:schedule_create_for_line' line_pk=production_line.pk %}" class="btn btn-success">Create New Schedule</a>
+    </div>
+</div>
+{% endblock %}

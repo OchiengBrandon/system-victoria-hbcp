@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Receipts{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Stock Receipts</h1>
+    <a href="{% url 'inventory:stock_receipt_create' purchase_order.id %}" class="btn btn-primary mb-3">Add Stock Receipt</a>
+    <form method="get" class="mb-3">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search..." class="form-control">
+        <button type="submit" class="btn btn-secondary mt-2">Search</button>
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Receipt Number</th>
+                <th>Purchase Order</th>
+                <th>Receipt Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for receipt in receipts %}
+                <tr>
+                    <td>{{ receipt.receipt_number }}</td>
+                    <td>{{ receipt.purchase_order.po_number }}</td>
+                    <td>{{ receipt.receipt_date }}</td>
+                    <td>
+                        <a href="{% url 'inventory:stock_receipt_detail' receipt.pk %}" class="btn btn-info">View</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4">No stock receipts found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        {% for page in receipts.paginator.page_range %}
+            <a href="?page={{ page }}&q={{ query }}" class="btn btn-outline">{{ page }}</a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

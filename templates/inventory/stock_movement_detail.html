@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Movement Detail{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Stock Movement Details</h1>
+    <div>
+        <strong>Reference Number:</strong> {{ movement.reference_number }}<br>
+        <strong>Material:</strong> {{ movement.material.name }}<br>
+        <strong>Movement Type:</strong> {{ movement.movement_type }}<br>
+        <strong>Date:</strong> {{ movement.movement_date }}<br>
+        <strong>Notes:</strong> {{ movement.notes }}<br>
+    </div>
+    <a href="{% url 'inventory:stock_movement_list' %}" class="btn btn-outline">Back to List</a>
+</div>
+{% endblock %}

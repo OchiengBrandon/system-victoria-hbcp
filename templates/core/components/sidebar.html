@@ -1,0 +1,35 @@
+<nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+    <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'core:dashboard' %}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if 'accounts' in request.path %}active{% endif %}" href="{% url 'accounts:dashboard' %}">
+                    <i class="fas fa-users"></i> Accounts
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if 'production' in request.path %}active{% endif %}" href="{% url 'production:dashboard' %}">
+                    <i class="fas fa-industry"></i> Production
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if 'products' in request.path %}active{% endif %}" href="{% url 'products:category_list' %}">
+                    <i class="fas fa-boxes"></i> Products
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if 'inventory' in request.path %}active{% endif %}" href="{% url 'inventory:dashboard' %}">
+                    <i class="fas fa-warehouse"></i> Inventory
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

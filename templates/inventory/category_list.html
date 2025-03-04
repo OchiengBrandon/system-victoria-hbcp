@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Material Categories{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Material Categories</h1>
+    <a href="{% url 'inventory:category_create' %}" class="btn btn-primary mb-3">Add Category</a>
+    <form method="get" class="mb-3">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search..." class="form-control">
+        <button type="submit" class="btn btn-secondary mt-2">Search</button>
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+                <tr>
+                    <td>{{ category.name }}</td>
+                    <td>{{ category.description }}</td>
+                    <td>
+                        <a href="{% url 'inventory:category_update' category.pk %}" class="btn btn-warning">Edit</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3">No categories found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        {% for page in categories.paginator.page_range %}
+            <a href="?page={{ page }}&q={{ query }}" class="btn btn-outline">{{ page }}</a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

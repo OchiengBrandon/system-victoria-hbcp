@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto p-6">
+    <h1 class="text-2xl font-bold">Leave Requests</h1>
+
+    <div class="flex justify-between items-center mt-4">
+        <form method="GET" class="flex space-x-4">
+            <label for="department" class="sr-only">Department</label>
+            <select id="department" name="department" class="border rounded px-2">
+                <option value="">All Departments</option>
+                {% for department in departments %}
+                    <option value="{{ department.id }}" {% if department.id == department_filter %}selected{% endif %}>
+                        {{ department.name }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn-primary">Filter</button>
+        </form>
+        <a href="{% url 'accounts:leave_request' %}" class="btn-primary">Request Leave</a>
+    </div>
+
+    <table class="min-w-full divide-y divide-gray-200 mt-6">
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Leave Type</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+            {% for leave in leave_requests %}
+            <tr>
+                <td>{{ leave.employee }} {{ leave.employee.user_profile.last_name }}</td>
+                <td>{{ leave.get_leave_type_display }}</td>
+                <td>{{ leave.start_date|date:"M d, Y" }}</td>
+                <td>{{ leave.end_date|date:"M d, Y" }}</td>
+                <td>
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        {% if leave.status == 'APPROVED' %}
+                            bg-green-100 text-green-800
+                        {% elif leave.status == 'PENDING' %}
+                            bg-yellow-100 text-yellow-800
+                        {% else %}
+                            bg-red-100 text-red-800
+                        {% endif %}">
+                        {{ leave.get_status_display }}
+                    </span>
+                </td>
+                <td>
+                    {% if leave.status == 'PENDING' %}
+                        <a href="{% url 'accounts:leave_approval' leave.pk %}" class="btn-secondary">Approve</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center text-gray-500">No leave requests available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-4">
+        {% if leave_requests.has_other_pages %}
+            <div class="flex justify-between">
+                {% if leave_requests.has_previous %}
+                    <a href="?page=1" class="btn-secondary">First</a>
+                    <a href="?page={{ leave_requests.previous_page_number }}" class="btn-secondary">Previous</a>
+                {% endif %}
+                <span>Page {{ leave_requests.number }} of {{ leave_requests.paginator.num_pages }}</span>
+                {% if leave_requests.has_next %}
+                    <a href="?page={{ leave_requests.next_page_number }}" class="btn-secondary">Next</a>
+                    <a href="?page={{ leave_requests.paginator.num_pages }}" class="btn-secondary">Last</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

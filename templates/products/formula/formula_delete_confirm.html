@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Formula: {{ formula.product.name }} - Version {{ formula.version }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Delete Formula</h1>
+    <p>Are you sure you want to delete the formula for "{{ formula.product.name }}" - Version "{{ formula.version }}"?</p>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'products:formula_list' formula.product.pk %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

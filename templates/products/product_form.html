@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Product{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Update Product</h1>
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.name.id_for_label }}" class="form-label">Product Name</label>
+                <input type="text" name="name" class="form-control" id="{{ form.name.id_for_label }}" value="{{ form.name.value }}" required>
+                {% if form.name.errors %}
+                    <div class="text-danger">{{ form.name.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.code.id_for_label }}" class="form-label">Product Code</label>
+                <input type="text" name="code" class="form-control" id="{{ form.code.id_for_label }}" value="{{ form.code.value }}" required>
+                {% if form.code.errors %}
+                    <div class="text-danger">{{ form.code.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+            <textarea name="description" class="form-control" id="{{ form.description.id_for_label }}" required>{{ form.description.value }}</textarea>
+            {% if form.description.errors %}
+                <div class="text-danger">{{ form.description.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+                <select name="category" class="form-select" id="{{ form.category.id_for_label }}">
+                    {% for category in form.category.field.queryset %}
+                        <option value="{{ category.id }}" {% if category.id == form.category.value %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                {% if form.category.errors %}
+                    <div class="text-danger">{{ form.category.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                <select name="status" class="form-select" id="{{ form.status.id_for_label }}">
+                    <option value="ACTIVE" {% if form.status.value == 'ACTIVE' %}selected{% endif %}>Active</option>
+                    <option value="DISCONTINUED" {% if form.status.value == 'DISCONTINUED' %}selected{% endif %}>Discontinued</option>
+                    <option value="DEVELOPMENT" {% if form.status.value == 'DEVELOPMENT' %}selected{% endif %}>In Development</option>
+                </select>
+                {% if form.status.errors %}
+                    <div class="text-danger">{{ form.status.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.unit.id_for_label }}" class="form-label">Unit</label>
+                <select name="unit" class="form-select" id="{{ form.unit.id_for_label }}">
+                    {% for choice in form.unit.field.choices %}
+                        <option value="{{ choice.0 }}" {% if choice.0 == form.unit.value %}selected{% endif %}>
+                            {{ choice.1 }}
+                        </option>
+                    {% endfor %}
+                </select>
+                {% if form.unit.errors %}
+                    <div class="text-danger">{{ form.unit.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.batch_size.id_for_label }}" class="form-label">Batch Size</label>
+                <input type="number" name="batch_size" class="form-control" id="{{ form.batch_size.id_for_label }}" value="{{ form.batch_size.value }}" step="0.01" required>
+                {% if form.batch_size.errors %}
+                    <div class="text-danger">{{ form.batch_size.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.minimum_stock.id_for_label }}" class="form-label">Minimum Stock</label>
+                <input type="number" name="minimum_stock" class="form-control" id="{{ form.minimum_stock.id_for_label }}" value="{{ form.minimum_stock.value }}" step="0.01" required>
+                {% if form.minimum_stock.errors %}
+                    <div class="text-danger">{{ form.minimum_stock.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.maximum_stock.id_for_label }}" class="form-label">Maximum Stock</label>
+                <input type="number" name="maximum_stock" class="form-control" id="{{ form.maximum_stock.id_for_label }}" value="{{ form.maximum_stock.value }}" step="0.01" required>
+                {% if form.maximum_stock.errors %}
+                    <div class="text-danger">{{ form.maximum_stock.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.reorder_point.id_for_label }}" class="form-label">Reorder Point</label>
+                <input type="number" name="reorder_point" class="form-control" id="{{ form.reorder_point.id_for_label }}" value="{{ form.reorder_point.value }}" step="0.01" required>
+                {% if form.reorder_point.errors %}
+                    <div class="text-danger">{{ form.reorder_point.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.standard_cost.id_for_label }}" class="form-label">Standard Cost</label>
+                <input type="number" name="standard_cost" class="form-control" id="{{ form.standard_cost.id_for_label }}" value="{{ form.standard_cost.value }}" step="0.01" required>
+                {% if form.standard_cost.errors %}
+                    <div class="text-danger">{{ form.standard_cost.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.selling_price.id_for_label }}" class="form-label">Selling Price</label>
+                <input type="number" name="selling_price" class="form-control" id="{{ form.selling_price.id_for_label }}" value="{{ form.selling_price.value }}" step="0.01" required>
+                {% if form.selling_price.errors %}
+                    <div class="text-danger">{{ form.selling_price.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+    <a href="{% url 'products:product_list' %}" class="btn btn-secondary">Back to Products</a>
+</div>
+
+{% block extra_js %}
+<script>
+    // Add your custom JavaScript here (if needed)
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% load currency_filters %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">Product Selling Price Report: {{ product.name }}</h1>
+
+    <!-- Visualizations Section -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card animate__animated animate__fadeInUp">
+                <div class="card-header">
+                    <h3>Cost Breakdown Visualization</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="costChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card animate__animated animate__fadeInUp">
+                <div class="card-header">
+                    <h3>Current Selling Price</h3>
+                </div>
+                <div class="card-body text-center">
+                    <p>The current selling price is: <strong>{{ current_selling_price|to_kes }}</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cost Breakdown Section -->
+    <div class="card mb-4 animate__animated animate__fadeInUp">
+        <div class="card-header">
+            <h3>Cost Breakdown</h3>
+        </div>
+        <div class="card-body">
+            <ul class="list-group">
+                <li class="list-group-item">Total Employee Cost: {{ calculation_details.total_employee_cost|to_kes }}</li>
+                <li class="list-group-item">Total Material Cost: {{ calculation_details.total_material_cost|to_kes }}</li>
+                <li class="list-group-item">Total Cost: {{ calculation_details.total_cost|to_kes }}</li>
+                <li class="list-group-item">Total Quantity Produced: {{ calculation_details.total_quantity_produced }}</li>
+                <li class="list-group-item">Markup: {{ calculation_details.markup|floatformat:2 }}</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Calculation Steps Section -->
+    <div class="card mb-4 animate__animated animate__fadeInUp">
+        <div class="card-header">
+            <h3>Calculation Steps</h3>
+        </div>
+        <div class="card-body">
+            <p>Current Selling Price = (Total Cost / Total Quantity Produced) * Markup</p>
+            <p>Current Selling Price = ({{ calculation_details.total_cost|to_kes }} / {{ calculation_details.total_quantity_produced }}) * {{ calculation_details.markup|floatformat:2 }} = {{ current_selling_price|to_kes }}</p>
+        </div>
+    </div>
+
+    <!-- Batch and Historical Data Section -->
+    <div class="card mb-4 animate__animated animate__fadeInUp">
+        <div class="card-header">
+            <h2>Batch and Historical Data</h2>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Batch Number</th>
+                        <th>Quantity Produced</th>
+                        <th>Quantity Rejected</th>
+                        <th>Status</th>
+                        <th>Total Employee Cost</th>
+                        <th>Total Material Cost</th>
+                        <th>Total Cost</th>
+                        <th>Selling Price</th>
+                        <th>Production Date</th>
+                        <th>Quality Check Results</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for batch in historical_data %}
+                    <tr>
+                        <td>{{ batch.batch_number }}</td>
+                        <td>{{ batch.quantity_produced }}</td>
+                        <td>{{ batch.quantity_rejected }}</td>
+                        <td>{{ batch.status }}</td>
+                        <td>{{ batch.total_employee_cost|to_kes }}</td>
+                        <td>{{ batch.total_material_cost|to_kes }}</td>
+                        <td>{{ batch.total_cost|to_kes }}</td>
+                        <td>{{ batch.selling_price|to_kes }}</td>
+                        <td>{{ batch.production_date }}</td>
+                        <td>
+                            {% if batch.quality_check_results %}
+                                <ul>
+                                    {% for qc in batch.quality_check_results %}
+                                        <li>Date: {{ qc.check_date }} - Strength Test: {{ qc.strength_test }} - Result: {{ qc.result }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                No quality checks available.
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="10">No historical data available for this product.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <a href="{% url 'products:product_list' %}" class="btn btn-primary">Back to Product List</a>
+</div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('costChart').getContext('2d');
+    const costChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Total Employee Cost', 'Total Material Cost', 'Total Cost'],
+            datasets: [{
+                label: 'Cost in KES',
+                data: [
+                    "{{ calculation_details.total_employee_cost|floatformat:2|to_kes }}",
+                    "{{ calculation_details.total_material_cost|floatformat:2|to_kes }}",
+                    "{{ calculation_details.total_cost|floatformat:2|to_kes }}",
+                ],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(75, 192, 192, 0.6)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(75, 192, 192, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Cost Breakdown Visualization'
+                }
+            }
+        }
+    });
+</script>
+
+<!-- Animation Library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+{% endblock %}

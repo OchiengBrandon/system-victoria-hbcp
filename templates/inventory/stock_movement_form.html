@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Movement{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">{{ movement.id|default:"Create New Movement" }}</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Save Movement</button>
+        <a href="{% url 'inventory:stock_movement_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if receipt %}Edit Stock Receipt{% else %}Add Stock Receipt{% endif %} - Inventory Management System
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">{% if receipt %}Edit Stock Receipt{% else %}Add Stock Receipt{% endif %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.receipt_date.id_for_label }}">Receipt Date*</label>
+            {{ form.receipt_date }}
+            {% if form.receipt_date.errors %}
+                <div class="text-danger">{{ form.receipt_date.errors }}</div>
+            {% endif %}
+        </div>
+        <h5>Items</h5>
+        {{ formset.management_form }}
+        {% for form in formset %}
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    {{ form.material.label_tag }}
+                    {{ form.material }}
+                    {% if form.material.errors %}
+                        <div class="text-danger">{{ form.material.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group col-md-3">
+                    {{ form.quantity.label_tag }}
+                    {{ form.quantity }}
+                    {% if form.quantity.errors %}
+                        <div class="text-danger">{{ form.quantity.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group col-md-3">
+                    {{ form.batch_number.label_tag }}
+                    {{ form.batch_number }}
+                    {% if form.batch_number.errors %}
+                        <div class="text-danger">{{ form.batch_number.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+        
+        <a href="{% url 'inventory:stock_receipt_list' %}" class="btn btn-outline">Cancel</a>
+        <button type="submit" class="btn btn-primary">
+            {% if receipt %}Update Stock Receipt{% else %}Create Stock Receipt{% endif %}
+        </button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+
+{% block breadcrumb_items %}
+<li>
+    <i class="fas fa-chevron-right text-gray-400"></i>
+</li>
+<li>
+    <a href="{% url 'accounts:employee_list' %}" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+        Employees
+    </a>
+</li>
+<li>
+    <i class="fas fa-chevron-right text-gray-400"></i>
+</li>
+<li>
+    <span class="text-gray-700 dark:text-gray-300">{{ employee.get_full_name }}</span>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Employee Information -->
+    <div class="lg:col-span-1">
+        <div class="card p-6">
+            <div class="text-center mb-6">
+                {% if employee.user.profile_image %}
+                <img src="{{ employee.user.profile_image.url }}" alt="{{ employee.get_full_name }}" 
+                     class="h-32 w-32 rounded-full mx-auto">
+                {% else %}
+                <div class="h-32 w-32 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center mx-auto">
+                    <i class="fas fa-user text-4xl text-gray-400"></i>
+                </div>
+                {% endif %}
+                <h2 class="mt-4 text-xl font-bold text-gray-900 dark:text-white">
+                    {{ employee.get_full_name }}
+                </h2>
+                <p class="text-gray-500 dark:text-gray-400">{{ employee.role }}</p>
+            </div>
+
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <dl class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <div class="py-3 flex justify-between">
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Employee ID</dt>
+                        <dd class="text-sm text-gray-900 dark:text-white">{{ employee.employee_id }}</dd>
+                    </div>
+                    <div class="py-3 flex justify-between">
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Department</dt>
+                        <dd class="text-sm text-gray-900 dark:text-white">{{ employee.department.name }}</dd>
+                    </div>
+                    <div class="py-3 flex justify-between">
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Status</dt>
+                        <dd class="text-sm">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                {% if employee.employment_status == 'ACTIVE' %}
+                                    bg-green-100 text-green-800
+                                {% elif employee.employment_status == 'ON_LEAVE' %}
+                                    bg-yellow-100 text-yellow-800
+                                {% elif employee.employment_status == 'SUSPENDED' %}
+                                    bg-red-100 text-red-800
+                                {% else %}
+                                    bg-gray-100 text-gray-800
+                                {% endif %}">
+                                {{ employee.get_employment_status_display }}
+                            </span>
+                        </dd>
+                    </div>
+                    <div class="py-3 flex justify-between">
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Join Date</dt>
+                        <dd class="text-sm text-gray-900 dark:text-white">{{ employee.date_joined|date:"M d, Y" }}</dd>
+                    </div>
+                    <div class="py-3 flex justify-between">
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Phone</dt>
+                        <dd class="text-sm text-gray-900 dark:text-white">{{ employee.phone_primary }}</dd>
+                    </div>
+                    <div class="py-3 flex justify-between">
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Emergency Contact</dt>
+                        <dd class="text-sm text-gray-900 dark:text-white">{{ employee.phone_emergency }}</dd>
+                    </div>
+                    <div class="py-3 flex justify-between">
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Address</dt>
+                        <dd class="text-sm text-gray-900 dark:text-white">{{ employee.get_full_address }}</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <div class="mt-6 flex space-x-3">
+                {% if perms.accounts.change_employee %}
+                <a href="{% url 'accounts:employee_update' pk=employee.pk %}" 
+                   class="btn-secondary flex-1">
+                    <i class="fas fa-edit mr-2"></i>Edit
+                </a>
+                {% endif %}
+                {% if perms.accounts.delete_employee %}
+                <a href="{% url 'accounts:employee_terminate' pk=employee.pk %}" 
+                   class="btn-danger flex-1"
+                   onclick="return confirm('Are you sure you want to terminate this employee?');">
+                    <i class="fas fa-user-times mr-2"></i>Terminate
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Production Involvement -->
+        <div class="card p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Production Involvement</h3>
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead>
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Batch Number</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Production Line</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cost</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for cost in employee_costs %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                            <a href="{% url 'production:batch_detail' cost.batch.pk %}" class="text-blue-600 hover:underline">
+                                {{ cost.batch.batch_number }}
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                            {{ cost.batch.schedule.production_line.name }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                            {{ cost.cost }}  <!-- Changed from 'amount' to 'cost' property -->
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                            {{ cost.batch.created_at|date:"M d, Y" }}  <!-- Assuming you want the batch creation date -->
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                            No production involvement records available.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Documents -->
+        <div class="card p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Documents</h3>
+                {% if perms.accounts.add_employeedocument %}
+                <a href="{% url 'accounts:document_upload' employee_pk=employee.pk %}" 
+                   class="btn-primary">
+                    <i class="fas fa-upload mr-2"></i>Upload
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                {% for document in documents %}
+                <div class="py-3 flex justify-between items-center">
+                    <div class="flex items-center">
+                        <i class="fas fa-file-alt text-gray-400 mr-3"></i>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                {{ document.title }}
+                            </p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                Uploaded on {{ document.uploaded_at|date:"M d, Y" }}
+                            </p>
+                        </div>
+                    </div>
+                    <a href="{{ document.file.url }}" 
+                       class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                       target="_blank">
+                        <i class="fas fa-download"></i>
+                    </a>
+                </div>
+                {% empty %}
+                <p class="text-gray-500 dark:text-gray-400 text-center py-4">
+                    No documents available.
+                </p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Recent Attendance -->
+        <div class="card p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Attendance</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead>
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Time In</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Time Out</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                        {% for record in attendance_records %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ record.date|date:"M d, Y" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ record.time_in|time:"H:i" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ record.time_out|time:"H:i"|default:"-" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    {% if record.status == 'PRESENT' %}
+                                        bg-green-100 text-green-800
+                                    {% elif record.status == 'LATE' %}
+                                        bg-yellow-100 text-yellow-800
+                                    {% else %}
+                                        bg-red-100 text-red-800
+                                    {% endif %}">
+                                    {{ record.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No attendance records available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Leave Requests -->
+        <div class="card p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Leave Requests</h3>
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead>
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Leave Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Start Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">End Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for request in leave_requests %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ request.leave_type }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ request.start_date|date:"M d, Y" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ request.end_date|date:"M d, Y" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ request.get_status_display }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                            No leave requests available.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

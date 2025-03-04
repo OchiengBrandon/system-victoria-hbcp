@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if category %}Edit Category{% else %}Add Category{% endif %} - Inventory Management System
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">{% if category %}Edit Category{% else %}Add Category{% endif %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">Category Name*</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div class="text-danger">{{ form.name.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">Description</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div class="text-danger">{{ form.description.errors }}</div>
+            {% endif %}
+        </div>
+        <a href="{% url 'inventory:category_list' %}" class="btn btn-outline">Cancel</a>
+        <button type="submit" class="btn btn-primary">
+            {% if category %}Update Category{% else %}Save Category{% endif %}
+        </button>
+    </form>
+</div>
+{% endblock %}

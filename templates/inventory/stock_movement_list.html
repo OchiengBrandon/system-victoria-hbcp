@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Movements{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Stock Movements</h1>
+    <form method="get" class="mb-3">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search..." class="form-control">
+        <button type="submit" class="btn btn-secondary mt-2">Search</button>
+        <a href="{% url 'inventory:stock_movement_create' %}" class="btn btn-primary mt-2">Add New Movement</a>
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Reference Number</th>
+                <th>Material</th>
+                <th>Movement Type</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for movement in movements %}
+                <tr>
+                    <td>{{ movement.reference_number }}</td>
+                    <td>{{ movement.material.name }}</td>
+                    <td>{{ movement.get_movement_type_display }}</td>
+                    <td>
+                        <a href="{% url 'inventory:stock_movement_detail' movement.pk %}" class="btn btn-info">View</a>
+                        <a href="{% url 'inventory:stock_movement_update' movement.pk %}" class="btn btn-warning">Edit</a>
+                        <form action="{% url 'inventory:stock_movement_delete' movement.pk %}" method="POST" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4">No stock movements found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        {% for page in movements.paginator.page_range %}
+            <a href="?page={{ page }}&q={{ query }}" class="btn btn-outline">{{ page }}</a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

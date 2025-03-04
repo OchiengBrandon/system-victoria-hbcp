@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Generate Production Report{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Generate Production Report</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_start_date" class="form-label">Start Date</label>
+            {{ form.start_date }}
+        </div>
+        <div class="mb-3">
+            <label for="id_end_date" class="form-label">End Date</label>
+            {{ form.end_date }}
+        </div>
+        <div class="mb-3">
+            <label for="id_production_line" class="form-label">Production Line</label>
+            {{ form.production_line }}
+        </div>
+        <div class="mb-3">
+            <label for="id_report_format" class="form-label">Report Format</label>
+            {{ form.report_format }}
+        </div>
+        <div class="mb-3">
+            <label for="id_report_type" class="form-label">Report Type</label>
+            {{ form.report_type }}
+        </div>
+        <button type="submit" class="btn btn-primary">Generate Report</button>
+    </form>
+</div>
+{% endblock %}

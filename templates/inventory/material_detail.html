@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Material Details{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h1 class="mb-4">{{ material.name }}</h1>
+    <div class="card">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Material Code:</dt>
+                <dd class="col-sm-9">{{ material.code }}</dd>
+
+                <dt class="col-sm-3">Category:</dt>
+                <dd class="col-sm-9">
+                    {% if material.category %}
+                        {{ material.category.name }}
+                    {% else %}
+                        <span class="text-muted">N/A</span>
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-3">Description:</dt>
+                <dd class="col-sm-9">{{ material.description }}</dd>
+
+                <dt class="col-sm-3">Unit:</dt>
+                <dd class="col-sm-9">{{ material.get_unit_display }}</dd>
+
+                <dt class="col-sm-3">Current Stock:</dt>
+                <dd class="col-sm-9">{{ material.current_stock }}</dd>
+
+                <dt class="col-sm-3">Minimum Stock:</dt>
+                <dd class="col-sm-9">{{ material.minimum_stock }}</dd>
+
+                <dt class="col-sm-3">Reorder Point:</dt>
+                <dd class="col-sm-9">{{ material.reorder_point }}</dd>
+
+                <dt class="col-sm-3">Maximum Stock:</dt>
+                <dd class="col-sm-9">{{ material.maximum_stock }}</dd>
+
+                <dt class="col-sm-3">Default Supplier:</dt>
+                <dd class="col-sm-9">
+                    {% if material.default_supplier %}
+                        {{ material.default_supplier.name }}
+                    {% else %}
+                        <span class="text-muted">N/A</span>
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-3">Last Purchase Price:</dt>
+                <dd class="col-sm-9">{{ material.last_purchase_price }}</dd>
+
+                <dt class="col-sm-3">Shelf Life (days):</dt>
+                <dd class="col-sm-9">{{ material.shelf_life }}</dd>
+
+                <dt class="col-sm-3">Storage Location:</dt>
+                <dd class="col-sm-9">{{ material.storage_location }}</dd>
+
+                <dt class="col-sm-3">Active:</dt>
+                <dd class="col-sm-9">{{ material.is_active|yesno:"Yes,No" }}</dd>
+
+                <dt class="col-sm-3">Created At:</dt>
+                <dd class="col-sm-9">{{ material.created_at }}</dd>
+
+                <dt class="col-sm-3">Updated At:</dt>
+                <dd class="col-sm-9">{{ material.updated_at }}</dd>
+            </dl>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{% url 'inventory:material_update' material.pk %}" class="btn btn-warning">Edit</a>
+                <a href="{% url 'inventory:material_list' %}" class="btn btn-outline-secondary">Back to Material List</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

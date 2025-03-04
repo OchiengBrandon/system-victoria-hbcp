@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+
+{% load form_filters %}
+{% load currency_filters %}
+
+{% block title %}{{ purchase_order.po_number }} - Purchase Order Details{% endblock %}
+
+{% block header_title %}Purchase Order Details{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <ul class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'inventory:dashboard' %}" class="breadcrumb-link">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'inventory:purchase_order_list' %}" class="breadcrumb-link">Purchase Orders</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="#" class="breadcrumb-link">{{ purchase_order.po_number }}</a>
+        </li>
+    </ul>
+
+    <h1 class="page-header-title">{{ purchase_order.po_number }}</h1>
+    <p class="page-header-subtitle">
+        Order Date: {{ purchase_order.order_date }} | Status: {{ purchase_order.get_status_display }}
+    </p>
+
+    <div class="action-buttons mt-3">
+        <a href="{% url 'inventory:purchase_order_update' purchase_order.pk %}" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Edit Purchase Order
+        </a>
+        <form action="{% url 'inventory:purchase_order_delete' purchase_order.pk %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this purchase order?');">
+                <i class="fas fa-trash"></i> Delete Purchase Order
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Purchase Order Information</h2>
+        </div>
+        <div class="card-body">
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Supplier</div>
+                    <div class="detail-value">{{ purchase_order.supplier.name }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Expected Delivery</div>
+                    <div class="detail-value">{{ purchase_order.expected_delivery_date|default:"Not specified" }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Payment Terms</div>
+                    <div class="detail-value">{{ purchase_order.payment_terms|default:"Not specified" }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Notes</div>
+                    <div class="detail-value">{{ purchase_order.notes|linebreaks }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Tax Type</div>
+                    <div class="detail-value">{{ purchase_order.tax_type|default:"Not specified" }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Amount</div>
+                    <div class="detail-value">{{ purchase_order.total_amount|to_kes }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Discount</div>
+                    <div class="detail-value">{{ purchase_order.discount_amount|to_kes }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Tax Amount</div>
+                    <div class="detail-value">{{ purchase_order.tax_amount|to_kes }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Created By</div>
+                    <div class="detail-value">{{ purchase_order.created_by }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Approved By</div>
+                    <div class="detail-value">{{ purchase_order.approved_by }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Created On</div>
+                    <div class="detail-value">{{ purchase_order.created_at }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Order Items</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Material</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Tax Rate</th>
+                            <th>Subtotal</th>
+                            <th>Tax Amount</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in purchase_order.items.all %}
+                            {% with subtotal=item.quantity|mul:item.unit_price %}
+                            {% with tax_amount=subtotal|mul:item.tax_rate|div:100 %}
+                            {% with total=subtotal|add:tax_amount %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    <a href="{% url 'inventory:material_detail' item.material.pk %}">
+                                        {{ item.material.name }}
+                                    </a>
+                                </td>
+                                <td>{{ item.quantity }} {{ item.material.unit }}</td>
+                                <td>{{ item.unit_price|to_kes }}</td>
+                                <td>{{ item.tax_rate }}%</td>
+                                <td>{{ subtotal|to_kes }}</td>
+                                <td>{{ tax_amount|to_kes }}</td>
+                                <td>{{ total|to_kes }}</td>
+                            </tr>
+                            {% endwith %}
+                            {% endwith %}
+                            {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="5" class="text-right font-semibold">Total:</td>
+                            <td>{{ purchase_order.subtotal|to_kes }}</td>
+                            <td>{{ purchase_order.tax_amount|to_kes }}</td>
+                            <td>{{ purchase_order.total_amount|to_kes }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if receipts %}
+<div class="row mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Stock Receipts</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Receipt Number</th>
+                            <th>Receipt Date</th>
+                            <th>Received By</th>
+                            <th>Items Received</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for receipt in receipts %}
+                            <tr>
+                                <td>{{ receipt.receipt_number }}</td>
+                                <td>{{ receipt.receipt_date }}</td>
+                                <td>{{ receipt.received_by.user.username }}</td>
+                                <td>{{ receipt.items.count }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

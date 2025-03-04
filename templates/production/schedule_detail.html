@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Schedule Details{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ schedule.product.name }} - Details</h1>
+    <p><strong>Planned Quantity:</strong> {{ schedule.quantity_planned }}</p>
+    <p><strong>Start Time:</strong> {{ schedule.start_time }}</p>
+    <p><strong>End Time:</strong> {{ schedule.end_time }}</p>
+    <p><strong>Progress:</strong> {{ progress }}%</p>
+
+    <h2>Batches</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Batch Number</th>
+                <th>Quantity Produced</th>
+                <th>Status</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Actions</th> <!-- New column for actions -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for batch in batches %}
+            <tr>
+                <td><a href="{% url 'production:batch_detail' pk=batch.pk %}">{{ batch.batch_number }}</a></td>
+                <td>{{ batch.quantity_produced }}</td>
+                <td>{{ batch.status }}</td>
+                <td>{{ batch.start_time }}</td>
+                <td>{{ batch.end_time }}</td>
+
+                <td>
+                    <a href="{% url 'production:batch_detail' pk=batch.pk %}" class="btn btn-warning btn-sm">Details</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No batches found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if can_create_batch %}
+        <a href="{% url 'production:batch_create' schedule.pk %}" class="btn btn-primary">Create Batch</a>
+    {% endif %}
+</div>
+{% endblock %}

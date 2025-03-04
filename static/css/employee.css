@@ -1,0 +1,666 @@
+/* employees.css - Styling specific to the employee management app */
+
+/* Employee card */
+.employee-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.employee-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.employee-header {
+    position: relative;
+    padding-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f9fafb;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
+
+.dark .employee-header {
+    background-color: #111827;
+}
+
+.employee-avatar {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 9999px;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    z-index: 1;
+}
+
+.dark .employee-avatar {
+    border-color: #1f2937;
+}
+
+.employee-header-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3rem;
+    background-color: #3b82f6;
+    z-index: 0;
+}
+
+.employee-body {
+    flex: 1;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.employee-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.employee-position {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+}
+
+.dark .employee-position {
+    color: #9ca3af;
+}
+
+.employee-department {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    background-color: #e5e7eb;
+    color: #4b5563;
+    margin-bottom: 1rem;
+}
+
+.dark .employee-department {
+    background-color: #374151;
+    color: #d1d5db;
+}
+
+.employee-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    width: 100%;
+    margin-bottom: 1.5rem;
+}
+
+.employee-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+    background-color: #f9fafb;
+}
+
+.dark .employee-stat {
+    background-color: #111827;
+}
+
+.employee-stat-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.employee-stat-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.dark .employee-stat-label {
+    color: #9ca3af;
+}
+
+.employee-contact {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.employee-contact-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+}
+
+.employee-contact-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background-color: #e5e7eb;
+    margin-right: 0.5rem;
+}
+
+.dark .employee-contact-icon {
+    background-color: #374151;
+}
+
+.employee-footer {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.dark .employee-footer {
+    border-color: #374151;
+}
+
+/* Employee attendance calendar */
+.attendance-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.attendance-calendar-header {
+    text-align: center;
+    font-weight: 500;
+    font-size: 0.75rem;
+    color: #6b7280;
+    padding: 0.5rem 0;
+}
+
+.dark .attendance-calendar-header {
+    color: #9ca3af;
+}
+
+.attendance-calendar-day {
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    position: relative;
+}
+
+.attendance-calendar-day.inactive {
+    color: #d1d5db;
+}
+
+.dark .attendance-calendar-day.inactive {
+    color: #4b5563;
+}
+
+.attendance-calendar-day.present {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.dark .attendance-calendar-day.present {
+    background-color: rgba(16, 185, 129, 0.2);
+}
+
+.attendance-calendar-day.absent {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.dark .attendance-calendar-day.absent {
+    background-color: rgba(239, 68, 68, 0.2);
+}
+
+.attendance-calendar-day.late {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.dark .attendance-calendar-day.late {
+    background-color: rgba(245, 158, 11, 0.2);
+}
+
+.attendance-calendar-day.holiday {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.dark .attendance-calendar-day.holiday {
+    background-color: rgba(59, 130, 246, 0.2);
+}
+
+.attendance-calendar-day.leave {
+    background-color: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+}
+
+.dark .attendance-calendar-day.leave {
+    background-color: rgba(139, 92, 246, 0.2);
+}
+
+/* Employee leave management */
+.leave-request-card {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.leave-request-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.leave-request-header {
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.leave-request-header.pending {
+    background-color: rgba(245, 158, 11, 0.1);
+}
+
+.dark .leave-request-header.pending {
+    background-color: rgba(245, 158, 11, 0.2);
+}
+
+.leave-request-header.approved {
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+.dark .leave-request-header.approved {
+    background-color: rgba(16, 185, 129, 0.2);
+}
+
+.leave-request-header.rejected {
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+.dark .leave-request-header.rejected {
+    background-color: rgba(239, 68, 68, 0.2);
+}
+
+.leave-request-title {
+    font-weight: 600;
+}
+
+.leave-request-status {
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.leave-request-status.pending {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.dark .leave-request-status.pending {
+    background-color: rgba(217, 119, 6, 0.2);
+    color: #fbbf24;
+}
+
+.leave-request-status.approved {
+    background-color: #d1fae5;
+    color: #059669;
+}
+
+.dark .leave-request-status.approved {
+    background-color: rgba(5, 150, 105, 0.2);
+    color: #34d399;
+}
+
+.leave-request-status.rejected {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.dark .leave-request-status.rejected {
+    background-color: rgba(185, 28, 28, 0.2);
+    color: #f87171;
+}
+
+.leave-request-body {
+    padding: 1rem;
+}
+
+.leave-request-dates {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.leave-request-date {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.leave-request-date-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 0.25rem;
+}
+
+.dark .leave-request-date-label {
+    color: #9ca3af;
+}
+
+.leave-request-date-value {
+    font-weight: 500;
+}
+
+.leave-request-separator {
+    margin: 0 1rem;
+    color: #6b7280;
+}
+
+.dark .leave-request-separator {
+    color: #9ca3af;
+}
+
+.leave-request-type {
+    margin-bottom: 0.75rem;
+}
+
+.leave-request-type-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 0.25rem;
+}
+
+.dark .leave-request-type-label {
+    color: #9ca3af;
+}
+
+.leave-request-type-value {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background-color: #e5e7eb;
+    color: #4b5563;
+}
+
+.dark .leave-request-type-value {
+    background-color: #374151;
+    color: #d1d5db;
+}
+
+.leave-request-reason {
+    margin-bottom: 0.75rem;
+}
+
+.leave-request-reason-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 0.25rem;
+}
+
+.dark .leave-request-reason-label {
+    color: #9ca3af;
+}
+
+.leave-request-footer {
+    padding: 1rem;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+}
+
+.dark .leave-request-footer {
+    border-color: #374151;
+}
+
+/* Employee performance chart */
+.performance-chart-container {
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    background-color: white;
+    margin-bottom: 1.5rem;
+}
+
+.dark .performance-chart-container {
+    background-color: #1f2937;
+}
+
+.performance-chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.performance-chart-title {
+    font-weight: 600;
+}
+
+.performance-chart-period {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.dark .performance-chart-period {
+    color: #9ca3af;
+}
+
+.performance-chart {
+    height: 300px;
+}
+
+.performance-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.performance-metric {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background-color: #f9fafb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dark .performance-metric {
+    background-color: #111827;
+}
+
+.performance-metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.performance-metric-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-align: center;
+}
+
+.dark .performance-metric-label {
+    color: #9ca3af;
+}
+
+/* Employee payroll */
+.payroll-card {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.payroll-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.payroll-header {
+    padding: 1rem;
+    background-color: #f9fafb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dark .payroll-header {
+    background-color: #111827;
+}
+
+.payroll-period {
+    font-weight: 600;
+}
+
+.payroll-status {
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.payroll-status.paid {
+    background-color: #d1fae5;
+    color: #059669;
+}
+
+.dark .payroll-status.paid {
+    background-color: rgba(5, 150, 105, 0.2);
+    color: #34d399;
+}
+
+.payroll-status.pending {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.dark .payroll-status.pending {
+    background-color: rgba(217, 119, 6, 0.2);
+    color: #fbbf24;
+}
+
+.payroll-body {
+    padding: 1rem;
+}
+
+.payroll-employee {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.payroll-employee-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    object-fit: cover;
+    margin-right: 0.75rem;
+}
+
+.payroll-employee-info {
+    flex: 1;
+}
+
+.payroll-employee-name {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.payroll-employee-position {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.dark .payroll-employee-position {
+    color: #9ca3af;
+}
+
+.payroll-details {
+    margin-bottom: 1rem;
+}
+
+.payroll-detail {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.payroll-detail:last-child {
+    margin-bottom: 0;
+}
+
+.payroll-detail-label {
+    color: #6b7280;
+}
+
+.dark .payroll-detail-label {
+    color: #9ca3af;
+}
+
+.payroll-detail-value {
+    font-weight: 500;
+}
+
+.payroll-total {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e5e7eb;
+    font-weight: 600;
+}
+
+.dark .payroll-total {
+    border-color: #374151;
+}
+
+.payroll-footer {
+    padding: 1rem;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dark .payroll-footer {
+    border-color: #374151;
+}
+
+.payroll-date {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.dark .payroll-date {
+    color: #9ca3af;
+}
+
+/* Employee training */
+.training-card {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+

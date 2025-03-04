@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Purchase Orders{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Purchase Orders</h1>
+    <a href="{% url 'inventory:purchase_order_create' %}" class="btn btn-primary mb-3">Add Purchase Order</a>
+    <form method="get" class="mb-3">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search..." class="form-control">
+        <button type="submit" class="btn btn-secondary mt-2">Search</button>
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>PO Number</th>
+                <th>Supplier</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for purchase_order in purchase_orders %}
+                <tr>
+                    <td>{{ purchase_order.po_number }}</td>
+                    <td>{{ purchase_order.supplier.name }}</td>
+                    <td>{{ purchase_order.status }}</td>
+                    <td>
+                        <a href="{% url 'inventory:purchase_order_detail' purchase_order.pk %}" class="btn btn-info">View</a>
+                        <a href="{% url 'inventory:purchase_order_update' purchase_order.pk %}" class="btn btn-warning">Edit</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4">No purchase orders found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        {% for page in purchase_orders.paginator.page_range %}
+            <a href="?page={{ page }}&q={{ query }}" class="btn btn-outline">{{ page }}</a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

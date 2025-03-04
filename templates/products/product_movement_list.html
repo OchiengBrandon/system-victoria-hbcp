@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Product Movement List</h1>
+
+    <form method="GET" class="mb-4">
+        <div class="form-row">
+            <div class="col">
+                <input type="text" name="q" class="form-control" placeholder="Search..." value="{{ query }}">
+            </div>
+            <div class="col">
+                <label for="type">Type</label>
+                <select id="type" name="type" class="form-control">
+                    <option value="">All Types</option>
+                    <option value="PRODUCTION" {% if movement_type == 'PRODUCTION' %}selected{% endif %}>Production</option>
+                    <option value="RETURN" {% if movement_type == 'RETURN' %}selected{% endif %}>Return</option>
+                    <option value="SALE" {% if movement_type == 'SALE' %}selected{% endif %}>Sale</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="product">Product</label>
+                <select id="product" name="product" class="form-control">
+                    <option value="">All Products</option>
+                    {% for product in products %}
+                        <option value="{{ product.id }}" {% if selected_product == product.id %}selected{% endif %}>{{ product.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Reference Number</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Movement Type</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for movement in movements %}
+            <tr>
+                <td>{{ movement.reference_number }}</td>
+                <td>{{ movement.product.name }}</td>
+                <td>{{ movement.quantity }}</td>
+                <td>{{ movement.get_movement_type_display }}</td>
+                <td>{{ movement.created_at }}</td>
+                <td>
+                    <a href="{% url 'products:product_movement_update' movement.id %}" class="btn btn-sm btn-warning">Edit</a>
+                    <form action="{% url 'products:product_movement_delete' movement.id %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No product movements found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-center">
+        {% if movements.has_other_pages %}
+            <nav>
+                <ul class="pagination">
+                    {% if movements.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page=1&q={{ query }}&type={{ movement_type }}&product={{ selected_product }}">First</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ movements.previous_page_number }}&q={{ query }}&type={{ movement_type }}&product={{ selected_product }}">Previous</a></li>
+                    {% endif %}
+                    <li class="page-item disabled"><span class="page-link">Page {{ movements.number }} of {{ movements.paginator.num_pages }}</span></li>
+                    {% if movements.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ movements.next_page_number }}&q={{ query }}&type={{ movement_type }}&product={{ selected_product }}">Next</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ movements.paginator.num_pages }}&q={{ query }}&type={{ movement_type }}&product={{ selected_product }}">Last</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+    
+    <a href="{% url 'products:product_movement_create' %}" class="btn btn-success mt-4">Add New Movement</a>
+</div>
+{% endblock %}

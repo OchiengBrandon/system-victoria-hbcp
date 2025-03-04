@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>{{ product.name }}</h1>
+    <p><strong>Code:</strong> {{ product.code }}</p>
+    <p><strong>Description:</strong> {{ product.description }}</p>
+    <p><strong>Status:</strong> {{ product.get_status_display }}</p>
+    <p><strong>Category:</strong> {{ product.category.name }}</p>  <!-- Assuming category is a related field -->
+    
+    <div class="mt-4">
+        <a href="{% url 'products:product_update' product.pk %}" class="btn btn-primary">Edit Product</a>
+        <a href="{% url 'products:product_list' %}" class="btn btn-secondary">Back to Products</a>
+        <a href="{% url 'products:product_movement_create' %}?product={{ product.pk }}" class="btn btn-success">Add Movement</a>
+    </div>
+
+    <div class="mt-5">
+        <h2>Product Formulas</h2>
+        <a href="{% url 'products:formula_create' product.pk %}" class="btn btn-success mb-3">Create New Formula</a>
+        {% if formulas %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Version</th>  <!-- Changed from Formula Name to Version -->
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for formula in formulas %}
+                        <tr>
+                            <td>{{ formula.version }}</td>  <!-- Updated to display version -->
+                            <td>
+                                <a href="{% url 'products:formula_update' formula.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                                <form action="{% url 'products:formula_delete' formula.pk %}" method="POST" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No formulas available for this product.</p>
+        {% endif %}
+    </div>
+
+    <div class="mt-5">
+        <h2>Product Movements</h2>
+        <a href="{% url 'products:product_movement_create' %}?product={{ product.pk }}" class="btn btn-success mb-3">Add Movement</a>
+        {% if product.stock_movements.count > 0 %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Reference Number</th>
+                        <th>Quantity</th>
+                        <th>Movement Type</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for movement in product.stock_movements.all %}
+                        <tr>
+                            <td>{{ movement.reference_number }}</td>
+                            <td>{{ movement.quantity }}</td>
+                            <td>{{ movement.get_movement_type_display }}</td>
+                            <td>{{ movement.created_at }}</td>
+                            <td>
+                                <a href="{% url 'products:product_movement_update' movement.id %}" class="btn btn-warning btn-sm">Edit</a>
+                                <form action="{% url 'products:product_movement_delete' movement.id %}" method="POST" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No movements recorded for this product.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

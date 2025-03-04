@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if supplier %}Edit Supplier{% else %}Add Supplier{% endif %} - Inventory Management System
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">{% if supplier %}Edit Supplier{% else %}Add Supplier{% endif %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">Supplier Name*</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div class="text-danger">{{ form.name.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.code.id_for_label }}">Supplier Code*</label>
+            {{ form.code }}
+            {% if form.code.errors %}
+                <div class="text-danger">{{ form.code.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.contact_person.id_for_label }}">Contact Person</label>
+            {{ form.contact_person }}
+            {% if form.contact_person.errors %}
+                <div class="text-danger">{{ form.contact_person.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.email.id_for_label }}">Email*</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div class="text-danger">{{ form.email.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.phone.id_for_label }}">Phone</label>
+            {{ form.phone }}
+            {% if form.phone.errors %}
+                <div class="text-danger">{{ form.phone.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.address.id_for_label }}">Address</label>
+            {{ form.address }}
+            {% if form.address.errors %}
+                <div class="text-danger">{{ form.address.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.tax_number.id_for_label }}">Tax Number</label>
+            {{ form.tax_number }}
+            {% if form.tax_number.errors %}
+                <div class="text-danger">{{ form.tax_number.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.credit_limit.id_for_label }}">Credit Limit</label>
+            {{ form.credit_limit }}
+            {% if form.credit_limit.errors %}
+                <div class="text-danger">{{ form.credit_limit.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.credit_period.id_for_label }}">Credit Period (days)*</label>
+            {{ form.credit_period }}
+            {% if form.credit_period.errors %}
+                <div class="text-danger">{{ form.credit_period.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group form-check">
+            {{ form.is_active }}
+            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">Active Supplier</label>
+        </div>
+        <div class="form-group">
+            <label for="{{ form.rating.id_for_label }}">Rating</label>
+            {{ form.rating }}
+            {% if form.rating.errors %}
+                <div class="text-danger">{{ form.rating.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.notes.id_for_label }}">Notes</label>
+            {{ form.notes }}
+            {% if form.notes.errors %}
+                <div class="text-danger">{{ form.notes.errors }}</div>
+            {% endif %}
+        </div>
+        <a href="{% url 'inventory:supplier_list' %}" class="btn btn-outline">Cancel</a>
+        <button type="submit" class="btn btn-primary">
+            {% if supplier %}Update Supplier{% else %}Save Supplier{% endif %}
+        </button>
+    </form>
+</div>
+{% endblock %}

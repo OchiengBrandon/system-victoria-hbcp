@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% load currency_filters %}
+
+{% block title %}Batch {{ batch.batch_number }} - Details{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Batch {{ batch.batch_number }}</h1>
+    <p><strong>Quantity Produced:</strong> {{ batch.quantity_produced }}</p>
+    <p><strong>Status:</strong> {{ batch.status }}</p>
+
+    <h2>Material Usage</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Material</th>
+                <th>Quantity Used</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usage in material_usage %}
+            <tr>
+                <td>{{ usage.material.name }}</td>
+                <td>{{ usage.quantity_actual }}</td>
+                <td>
+                    <a href="{% url 'production:material_usage_update' batch.pk usage.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="{% url 'production:material_usage_delete' batch.pk usage.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this material usage?');">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">No material usage found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Employee Costs</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Hours Worked</th>
+                <th>Hourly Rate</th>
+                <th>Total Cost</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cost in employee_costs %}
+            <tr>
+                <td>{{ cost.employee }}</td>
+                <td>{{ cost.hours_worked }}</td>
+                <td>{{ cost.hourly_rate|to_kes }}</td>
+                <td>{{ cost.hours_worked|floatformat:2|multiply:cost.hourly_rate|to_kes }}</td>
+                <td>
+                    <a href="{% url 'production:employee_cost_update' batch.pk cost.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="{% url 'production:employee_cost_delete' batch.pk cost.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this employee cost?');">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No employee costs found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Quality Checks</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Inspector</th>
+                <th>Result</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for check in quality_checks %}
+            <tr>
+                <td>{{ check.inspector }}</td>
+                <td>{{ check.result }}</td>
+                <td>{{ check.check_date }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">No quality checks found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-4">
+        {% if can_add_quality_check %}
+            <a href="{% url 'production:quality_check_create' batch.pk %}" class="btn btn-primary">Add Quality Check</a>
+        {% endif %}
+        {% if can_update_batch %}
+            <a href="{% url 'production:batch_update' batch.pk %}" class="btn btn-warning">Edit Batch</a>
+        {% endif %}
+        <a href="{% url 'production:add_materials_to_batch' batch.pk %}" class="btn btn-success">Add Materials</a>
+        <a href="{% url 'production:add_employee_costs_to_batch' batch.pk %}" class="btn btn-info">Add Employee Costs</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if material %}Edit Material{% else %}Add Material{% endif %} - Inventory Management System
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">{% if material %}Edit Material{% else %}Add Material{% endif %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="{{ form.code.id_for_label }}">Material Code*</label>
+            {{ form.code }}
+            {% if form.code.errors %}
+                <div class="text-danger">{{ form.code.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">Material Name*</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div class="text-danger">{{ form.name.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.category.id_for_label }}">Category*</label>
+            {{ form.category }}
+            {% if form.category.errors %}
+                <div class="text-danger">{{ form.category.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">Description</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div class="text-danger">{{ form.description.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.unit.id_for_label }}">Unit*</label>
+            {{ form.unit }}
+            {% if form.unit.errors %}
+                <div class="text-danger">{{ form.unit.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.current_stock.id_for_label }}">Current Stock*</label>
+            {{ form.current_stock }}
+            {% if form.current_stock.errors %}
+                <div class="text-danger">{{ form.current_stock.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.minimum_stock.id_for_label }}">Minimum Stock*</label>
+            {{ form.minimum_stock }}
+            {% if form.minimum_stock.errors %}
+                <div class="text-danger">{{ form.minimum_stock.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.reorder_point.id_for_label }}">Reorder Point*</label>
+            {{ form.reorder_point }}
+            {% if form.reorder_point.errors %}
+                <div class="text-danger">{{ form.reorder_point.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.maximum_stock.id_for_label }}">Maximum Stock*</label>
+            {{ form.maximum_stock }}
+            {% if form.maximum_stock.errors %}
+                <div class="text-danger">{{ form.maximum_stock.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.default_supplier.id_for_label }}">Default Supplier</label>
+            {{ form.default_supplier }}
+            {% if form.default_supplier.errors %}
+                <div class="text-danger">{{ form.default_supplier.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.last_purchase_price.id_for_label }}">Last Purchase Price</label>
+            {{ form.last_purchase_price }}
+            {% if form.last_purchase_price.errors %}
+                <div class="text-danger">{{ form.last_purchase_price.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.shelf_life.id_for_label }}">Shelf Life (days)</label>
+            {{ form.shelf_life }}
+            {% if form.shelf_life.errors %}
+                <div class="text-danger">{{ form.shelf_life.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.storage_location.id_for_label }}">Storage Location</label>
+            {{ form.storage_location }}
+            {% if form.storage_location.errors %}
+                <div class="text-danger">{{ form.storage_location.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.is_active.id_for_label }}">Active</label>
+            {{ form.is_active }}
+            {% if form.is_active.errors %}
+                <div class="text-danger">{{ form.is_active.errors }}</div>
+            {% endif %}
+        </div>
+
+        <a href="{% url 'inventory:material_list' %}" class="btn btn-outline">Cancel</a>
+        <button type="submit" class="btn btn-primary">
+            {% if material %}Update Material{% else %}Save Material{% endif %}
+        </button>
+    </form>
+</div>
+{% endblock %}

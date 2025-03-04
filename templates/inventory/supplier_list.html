@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Supplier List{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Suppliers</h1>
+    <a href="{% url 'inventory:supplier_create' %}" class="btn btn-primary mb-3">Add Supplier</a>
+    <form method="get" class="mb-3">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search..." class="form-control">
+        <button type="submit" class="btn btn-secondary mt-2">Search</button>
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Contact Person</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for supplier in suppliers %}
+                <tr>
+                    <td>{{ supplier.name }}</td>
+                    <td>{{ supplier.code }}</td>
+                    <td>{{ supplier.contact_person }}</td>
+                    <td>{{ supplier.email }}</td>
+                    <td>{{ supplier.is_active|yesno:"Active,Inactive" }}</td>
+                    <td>
+                        <a href="{% url 'inventory:supplier_detail' supplier.pk %}" class="btn btn-info">View</a>
+                        <a href="{% url 'inventory:supplier_update' supplier.pk %}" class="btn btn-warning">Edit</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="6">No suppliers found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        {% for page in suppliers.paginator.page_range %}
+            <a href="?page={{ page }}&q={{ query }}" class="btn btn-outline">{{ page }}</a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto p-6">
+    <h1 class="text-2xl font-bold">{{ title }}</h1>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 gap-6 mt-4">
+            <div>
+                <h2 class="text-lg font-semibold">User Information</h2>
+                {{ user_form.as_p }}
+            </div>
+            <div>
+                <h2 class="text-lg font-semibold">Employee Details</h2>
+                {{ employee_form.as_p }}
+            </div>
+        </div>
+        <div class="mt-6">
+            <button type="submit" class="btn-primary">{{ title }}</button>
+            <a href="{% url 'accounts:employee_list' %}" class="btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

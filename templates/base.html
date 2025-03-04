@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}System Victoria{% endblock %}</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        secondary: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        },
+                        success: {
+                            50: '#ecfdf5',
+                            500: '#10b981',
+                            700: '#047857',
+                        },
+                        warning: {
+                            50: '#fffbeb',
+                            500: '#f59e0b',
+                            700: '#b45309',
+                        },
+                        danger: {
+                            50: '#fef2f2',
+                            500: '#ef4444',
+                            700: '#b91c1c',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'spin-slow': 'spin 6s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Sortable.js -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    {% load static %}
+
+    <!-- Custom CSS -->
+    <!-- <link rel="stylesheet" href="{% static 'css/base.css' %}"> -->
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/inventory.css' %}">
+    <link rel="stylesheet" href="{% static 'css/quick-actions.css' %}">
+    <link rel="stylesheet" href="{% static 'css/inventory_dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/production_dashboard.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-sans" 
+      x-data="{ 
+          sidebarOpen: false, 
+          userDropdownOpen: false, 
+          notificationsOpen: false,
+          activeSidebarItem: localStorage.getItem('activeSidebarItem') || 'dashboard',
+          setActiveSidebarItem(item) {
+              this.activeSidebarItem = item;
+              localStorage.setItem('activeSidebarItem', item);
+          }
+      }">
+    <div class="animated-bg">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <defs>
+                <pattern id="pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <circle cx="20" cy="20" r="1" fill="currentColor" class="text-primary-500/20 dark:text-primary-400/20" />
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#pattern)" />
+        </svg>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-white dark:bg-gray-800 fixed w-full z-50 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <!-- Mobile menu button -->
+                    <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 btn-press" title="Toggle sidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    
+                    <div class="flex-shrink-0 flex items-center ml-2 lg:ml-0">
+                        <img class="h-10 w-auto" src="/static/img/favicon.png" alt="Logo">
+                        <span class="ml-2 text-xl font-semibold text-primary-600 dark:text-primary-400">System Victoria</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <!-- Search -->
+                    <div class="relative hidden md:block">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400 dark:text-gray-500"></i>
+                        </div>
+                        <input type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent sm:text-sm" placeholder="Search...">
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div x-show="quickActionsOpen" @click.away="close()" class="quick-actions-dropdown hidden">
+                        <div class="header">
+                            <h3>Quick Actions</h3>
+                        </div>
+                        <div class="py-1">
+                            <a href="{% url 'inventory:material_create' %}" class="action text-green">
+                                <i class="fas fa-plus-circle"></i>
+                                Add Inventory Item
+                            </a>
+                            <a href="{% url 'products:product_create' %}" class="action text-blue">
+                                <i class="fas fa-box-open"></i>
+                                Add New Product
+                            </a>
+                            <a href="{% url 'accounts:employee_create' %}" class="action text-purple">
+                                <i class="fas fa-user-plus"></i>
+                                Add Employee
+                            </a>
+                            <a href="{% url 'production:production_line_create' %}" class="action text-orange">
+                                <i class="fas fa-tasks"></i>
+                                Create Production Task
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div class="relative">
+                        <button @click="notificationsOpen = !notificationsOpen" class="tooltip p-2 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 btn-press" data-tooltip="Notifications">
+                            <i class="fas fa-bell text-gray-600 dark:text-gray-300"></i>
+                            <span class="notification-badge">3</span>
+                        </button>
+                        
+                        <!-- Notifications dropdown -->
+                        <div x-show="notificationsOpen" @click.away="notificationsOpen = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="origin-top-right absolute right-0 mt-2 w-80 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 dark:divide-gray-700 focus:outline-none z-50" style="display: none;">
+                            <div class="px-4 py-3 flex justify-between items-center">
+                                <h3 class="text-sm font-medium text-gray-700 dark:text-gray-200">Notifications</h3>
+                                <span class="text-xs font-medium text-primary-600 dark:text-primary-400 bg-primary-100 dark:bg-primary-900/40 px-2 py-1 rounded-full">3 new</span>
+                            </div>
+                            <div class="max-h-60 overflow-y-auto">
+                                <a href="#" class="flex px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition ease-in-out duration-150 border-l-4 border-primary-500">
+                                    <div class="flex-shrink-0">
+                                        <div class="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
+                                            <i class="fas fa-user-plus text-primary-600 dark:text-primary-400"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3 w-0 flex-1">
+                                        <p class="text-sm font-medium text-gray-900 dark:text-gray-100">New employee added</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">John Doe has been added to the system</p>
+                                        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">5 minutes ago</p>
+                                    </div>
+                                </a>
+                                <a href="#" class="flex px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition ease-in-out duration-150 border-l-4 border-green-500">
+                                    <div class="flex-shrink-0">
+                                        <div class="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                                            <i class="fas fa-tasks text-green-600 dark:text-green-400"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3 w-0 flex-1">
+                                        <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Production task completed</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Task #1234 has been marked as complete</p>
+                                        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">1 hour ago</p>
+                                    </div>
+                                </a>
+                                <a href="#" class="flex px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition ease-in-out duration-150 border-l-4 border-yellow-500">
+                                    <div class="flex-shrink-0">
+                                        <div class="h-10 w-10 rounded-full bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center">
+                                            <i class="fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-400"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3 w-0 flex-1">
+                                        <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Low inventory alert</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Item #5678 is running low on stock</p>
+                                        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">3 hours ago</p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="px-4 py-2 flex justify-between">
+                                <a href="#" class="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300">View all notifications</a>
+                                <a href="#" class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">Mark all as read</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Dark mode toggle -->
+                    <button id="darkModeToggle" class="tooltip p-2 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 btn-press" data-tooltip="Toggle theme" title="Toggle theme">
+                        <i class="fas fa-moon dark:hidden text-gray-600"></i>
+                        <i class="fas fa-sun hidden dark:block text-yellow-300"></i>
+                    </button>
+
+                    <!-- User dropdown -->
+                    <div class="relative">
+                        <button @click="userDropdownOpen = !userDropdownOpen" class="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 btn-press">
+                            <span class="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300">{{ request.user.get_full_name }}</span>
+                            <div class="relative">
+                                <img class="h-9 w-9 rounded-full border-2 border-primary-500 dark:border-primary-400 object-cover" src="/static/img/default-avatar.png" alt="User avatar">
+                                <span class="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white dark:border-gray-800"></span>
+                            </div>
+                        </button>
+                        
+                        <!-- User dropdown menu -->
+                        <div x-show="userDropdownOpen" @click.away="userDropdownOpen = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="origin-top-right absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 dark:divide-gray-700 focus:outline-none z-50" style="display: none;">
+                            <div class="px-4 py-3">
+                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ request.user.get_full_name }}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ request.user.email }}</p>
+                            </div>
+                            <div class="py-1">
+                                <a href="{% url 'accounts:profile' %}" class="group flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <i class="fas fa-user mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-500 dark:group-hover:text-primary-400"></i>
+                                    Profile
+                                </a>
+                                <a href="#" class="group flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <i class="fas fa-cog mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-500 dark:group-hover:text-primary-400"></i>
+                                    Settings
+                                </a>
+                                <a href="#" class="group flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <i class="fas fa-history mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-500 dark:group-hover:text-primary-400"></i>
+                                    Activity Log
+                                </a>
+                            </div>
+                            <div class="py-1">
+                                <form method="POST" action="{% url 'accounts:logout' %}" class="inline-display">
+                                    {% csrf_token %}
+                                    <button type="submit" class="group flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        <i class="fas fa-sign-out-alt mr-3 text-gray-500 dark:text-gray-400 group-hover:text-red-500"></i>
+                                        Logout
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar for mobile -->
+    <div x-show="sidebarOpen" @click.away="sidebarOpen = false" class="fixed inset-0 z-40 flex lg:hidden" style="display: none;">
+        <div x-show="sidebarOpen" x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0">
+            <div class="absolute inset-0 bg-gray-600 dark:bg-gray-900 opacity-75"></div>
+        </div>
+        
+        <div x-show="sidebarOpen" x-transition:enter="transition ease-in-out duration-300 transform" x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in-out duration-300 transform" x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full" class="relative flex-1 flex flex-col max-w-xs w-full bg-gradient-to-b from-gray-800 to-gray-900 dark:from-gray-900 dark:to-black">
+            <div class="absolute top-0 right-0 -mr-12 pt-2">
+                <button @click="sidebarOpen = false" class="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                    <i class="fas fa-times text-white"></i>
+                </button>
+            </div>
+            
+            <div class="flex-1 h-0 pt-20 pb-4 overflow-y-auto">
+                <div class="px-4 py-6">
+                    <div class="flex items-center mb-6">
+                        <div class="flex-shrink-0">
+                            <img class="h-10 w-10 rounded-full" src="/static/img/default-avatar.png" alt="User avatar">
+                        </div>
+                        <div class="ml-3">
+                            <div class="text-base font-medium text-white">{{ request.user.get_full_name }}</div>
+                            <div class="text-sm font-medium text-gray-400">{{ request.user.email }}</div>
+                        </div>
+                    </div>
+                    <nav>
+                        <!-- Mobile sidebar menu items -->
+                        <div class="space-y-2">
+                            <a href="{% url 'core:dashboard' %}" @click="setActiveSidebarItem('dashboard')" class="menu-item group flex items-center px-4 py-3 text-base font-medium text-gray-300 rounded-lg hover:bg-gray-700" :class="{'sidebar-active': activeSidebarItem === 'dashboard'}">
+                                <i class="fas fa-tachometer-alt mr-4 text-gray-400 group-hover:text-primary-400"></i>
+                                Dashboard
+                            </a>
+                            <a href="{% url 'inventory:dashboard' %}" @click="setActiveSidebarItem('inventory')" class="menu-item group flex items-center px-4 py-3 text-base font-medium text-gray-300 rounded-lg hover:bg-gray-700" :class="{'sidebar-active': activeSidebarItem === 'inventory'}">
+                                <i class="fas fa-boxes mr-4 text-gray-400 group-hover:text-primary-400"></i>
+                                Inventory
+                            </a>
+                            <a href="{% url 'production:dashboard' %}" @click="setActiveSidebarItem('production')" class="menu-item group flex items-center px-4 py-3 text-base font-medium text-gray-300 rounded-lg hover:bg-gray-700" :class="{'sidebar-active': activeSidebarItem === 'production'}">
+                                <i class="fas fa-industry mr-4 text-gray-400 group-hover:text-primary-400"></i>
+                                Production
+                            </a>
+                            <a href="{% url 'accounts:dashboard' %}" @click="setActiveSidebarItem('employees')" class="menu-item group flex items-center px-4 py-3 text-base font-medium text-gray-300 rounded-lg hover:bg-gray-700" :class="{'sidebar-active': activeSidebarItem === 'employees'}">
+                                <i class="fas fa-users mr-4 text-gray-400 group-hover:text-primary-400"></i>
+                                Employee Management
+                            </a>
+                            <a href="{% url 'products:dashboard' %}" @click="setActiveSidebarItem('products')" class="menu-item group flex items-center px-4 py-3 text-base font-medium text-gray-300 rounded-lg hover:bg-gray-700" :class="{'sidebar-active': activeSidebarItem === 'products'}">
+                                <i class="fas fa-box-open mr-4 text-gray-400 group-hover:text-primary-400"></i>
+                                Products
+                            </a>
+                            
+                            <!-- Reports Section -->
+                            <div x-data="{ open: false }">
+                                <button @click="open = !open" class="menu-item w-full group flex items-center justify-between px-4 py-3 text-base font-medium text-gray-300 rounded-lg hover:bg-gray-700">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-chart-line mr-4 text-gray-400 group-hover:text-primary-400"></i>
+                                        Reports
+                                    </div>
+                                    <i class="fas" :class="open ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+                                </button>
+                                <div x-show="open" class="pl-10 mt-1 space-y-1">
+                                    <a href="#" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Sales Reports</a>
+                                    <a href="#" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Inventory Reports</a>
+                                    <a href="#" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Production Reports</a>
+                                    <a href="#" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Employee Reports</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Settings Section -->
+                        <div class="mt-8">
+                            <h3 class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Settings</h3>
+                            <div class="mt-2 space-y-2">
+                                <a href="#" class="menu-item group flex items-center px-4 py-3 text-base font-medium text-gray-300 rounded-lg hover:bg-gray-700">
+                                    <i class="fas fa-cog mr-4 text-gray-400 group-hover:text-primary-400"></i>
+                                    System Settings
+                                </a>
+                                <a href="#" class="menu-item group flex items-center px-4 py-3 text-base font-medium text-gray-300 rounded-lg hover:bg-gray-700">
+                                    <i class="fas fa-user-cog mr-4 text-gray-400 group-hover:text-primary-400"></i>
+                                    User Management
+                                </a>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+            
+            <!-- System status -->
+            <div class="flex-shrink-0 p-4">
+                <div class="glass rounded-lg p-3">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="h-8 w-8 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                                <i class="fas fa-server text-green-600 dark:text-green-400"></i>
+                            </div>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-xs font-medium text-gray-300">System Status</p>
+                            <div class="flex items-center">
+                                <span class="h-2 w-2 rounded-full bg-green-500 mr-2 pulse"></span>
+                                <p class="text-xs text-gray-400">All systems operational</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex-shrink-0 w-14"></div>
+    </div>
+
+    <!-- Sidebar for desktop -->
+    <div class="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col lg:z-40">
+        <div class="flex-1 flex flex-col min-h-0 bg-gradient-to-b from-gray-800 to-gray-900 dark:from-gray-900 dark:to-black pt-16">
+            <div class="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto scrollbar">
+                <div class="flex-1 px-4 space-y-1">
+                    <!-- Desktop sidebar menu items -->
+                    <div class="space-y-2 mt-6">
+                        <a href="{% url 'core:dashboard' %}" @click="setActiveSidebarItem('dashboard')" class="menu-item group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700 transition-all duration-200" :class="{'sidebar-active': activeSidebarItem === 'dashboard'}">
+                            <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-700 group-hover:bg-primary-600 mr-3 transition-all duration-200">
+                                <i class="fas fa-tachometer-alt text-gray-300 group-hover:text-white"></i>
+                            </div>
+                            <span class="text-gray-300">Dashboard</span>
+                        </a>
+                        
+                        <!-- Inventory App -->
+                        <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                            <button @click="open = !open; if(open) setActiveSidebarItem('inventory')" class="menu-item w-full group flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700 transition-all duration-200" :class="{'sidebar-active': activeSidebarItem === 'inventory'}">
+                                <div class="flex items-center">
+                                    <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-700 group-hover:bg-primary-600 mr-3 transition-all duration-200">
+                                        <i class="fas fa-boxes text-gray-300 group-hover:text-white"></i>
+                                    </div>
+                                    <span class="text-gray-300">Inventory</span>
+                                </div>
+                                <i class="fas fa-chevron-right text-gray-400 group-hover:text-white transition-transform duration-200" :class="{'transform rotate-90': open}"></i>
+                            </button>
+                            <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="mt-1 pl-11 space-y-1" style="display: none;">
+                                <a href="{% url 'inventory:dashboard' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Dashboard</a>
+                                <a href="{% url 'inventory:material_list' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Materials</a>
+                                <a href="{% url 'inventory:category_list' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Categories</a>
+                                <a href="{% url 'inventory:supplier_list' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Suppliers</a>
+                                <a href="{% url 'inventory:stock_adjustment_list' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Stock Adjustement</a>
+
+                                <a href="{% url 'inventory:stock_movement_list' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Stock Transactions</a>
+                            </div>
+                        </div>
+                        
+                        <!-- Production App -->
+                        <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                            <button @click="open = !open; if(open) setActiveSidebarItem('production')" class="menu-item w-full group flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700 transition-all duration-200" :class="{'sidebar-active': activeSidebarItem === 'production'}">
+                                <div class="flex items-center">
+                                    <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-700 group-hover:bg-primary-600 mr-3 transition-all duration-200">
+                                        <i class="fas fa-industry text-gray-300 group-hover:text-white"></i>
+                                    </div>
+                                    <span class="text-gray-300">Production</span>
+                                </div>
+                                <i class="fas fa-chevron-right text-gray-400 group-hover:text-white transition-transform duration-200" :class="{'transform rotate-90': open}"></i>
+                            </button>
+                            <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="mt-1 pl-11 space-y-1" style="display: none;">
+                                <a href="{% url 'production:dashboard' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Dashboard</a>
+                                <a href="{% url 'production:schedule_list' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Tasks</a>
+                                <a href="{% url 'production:production_line_list' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Production Lines</a>
+                                <a href="{% url 'production:schedule_list' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Schedule</a>
+                            </div>
+                        </div>
+                        
+                        <!-- Employee Management App -->
+                        <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                            <button @click="open = !open; if(open) setActiveSidebarItem('employees')" class="menu-item w-full group flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700 transition-all duration-200" :class="{'sidebar-active': activeSidebarItem === 'employees'}">
+                                <div class="flex items-center">
+                                    <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-700 group-hover:bg-primary-600 mr-3 transition-all duration-200">
+                                        <i class="fas fa-users text-gray-300 group-hover:text-white"></i>
+                                    </div>
+                                    <span class="text-gray-300">Employees</span>
+                                </div>
+                                <i class="fas fa-chevron-right text-gray-400 group-hover:text-white transition-transform duration-200" :class="{'transform rotate-90': open}"></i>
+                            </button>
+                            <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="mt-1 pl-11 space-y-1" style="display: none;">
+                                <a href="{% url 'accounts:dashboard' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Dashboard</a>
+                                <a href="{% url 'accounts:employee_list' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Employees</a>
+                                <a href="{% url 'accounts:department_list' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Departments</a>
+                                <a href="{% url 'accounts:attendance_list' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Attendance</a>
+                                <a href="{% url 'accounts:leave_list' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Leave Management</a>
+                            </div>
+                        </div>
+                        
+                        <!-- Products App -->
+                        <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                            <button @click="open = !open; if(open) setActiveSidebarItem('products')" class="menu-item w-full group flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700 transition-all duration-200" :class="{'sidebar-active': activeSidebarItem === 'products'}">
+                                <div class="flex items-center">
+                                    <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-700 group-hover:bg-primary-600 mr-3 transition-all duration-200">
+                                        <i class="fas fa-box-open text-gray-300 group-hover:text-white"></i>
+                                    </div>
+                                    <span class="text-gray-300">Products</span>
+                                </div>
+                                <i class="fas fa-chevron-right text-gray-400 group-hover:text-white transition-transform duration-200" :class="{'transform rotate-90': open}"></i>
+                            </button>
+                            <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="mt-1 pl-11 space-y-1" style="display: none;">
+                                <a href="{% url 'products:dashboard' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Dashboard</a>
+                                <a href="{% url 'products:product_list' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Products</a>
+                                <a href="{% url 'products:category_list' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Categories</a>
+                                <a href="{% url 'products:product_movement_list' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Product Movement</a>
+
+
+                            </div>
+                        </div>
+                        
+                        <!-- Reports Section -->
+                        <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                            <button @click="open = !open" class="menu-item w-full group flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700 transition-all duration-200">
+                                <div class="flex items-center">
+                                    <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-700 group-hover:bg-primary-600 mr-3 transition-all duration-200">
+                                        <i class="fas fa-chart-line text-gray-300 group-hover:text-white"></i>
+                                    </div>
+                                    <span class="text-gray-300">Reports</span>
+                                </div>
+                                <i class="fas fa-chevron-right text-gray-400 group-hover:text-white transition-transform duration-200" :class="{'transform rotate-90': open}"></i>
+                            </button>
+                            <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="mt-1 pl-11 space-y-1" style="display: none;">
+                                <a href="#" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Sales Reports</a>
+                                <a href="{% url 'inventory:stock_movement_list' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Inventory Reports</a>
+                                <a href="{% url 'production:generate_report' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Production Reports</a>
+                                <a href="#" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Employee Reports</a>
+                                <a href="{% url 'products:product_report' %}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">Product Reports</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System section -->
+                    <div class="mt-10">
+                        <h3 class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">System</h3>
+                        <div class="mt-2 space-y-2">
+                            <a href="#" class="menu-item group flex items-center px-4 py-3 text-sm font-medium text-gray-300 rounded-lg hover:bg-gray-700 transition-all duration-200">
+                                <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-700 group-hover:bg-primary-600 mr-3 transition-all duration-200">
+                                    <i class="fas fa-cog text-gray-300 group-hover:text-white"></i>
+                                </div>
+                                Settings
+                            </a>
+                            <a href="#" class="menu-item group flex items-center px-4 py-3 text-sm font-medium text-gray-300 rounded-lg hover:bg-gray-700 transition-all duration-200">
+                                <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-700 group-hover:bg-primary-600 mr-3 transition-all duration-200">
+                                    <i class="fas fa-user-shield text-gray-300 group-hover:text-white"></i>
+                                </div>
+                                User Management
+                            </a>
+                            <a href="#" class="menu-item group flex items-center px-4 py-3 text-sm font-medium text-gray-300 rounded-lg hover:bg-gray-700 transition-all duration-200">
+                                <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-700 group-hover:bg-primary-600 mr-3 transition-all duration-200">
+                                    <i class="fas fa-question-circle text-gray-300 group-hover:text-white"></i>
+                                </div>
+                                Help & Support
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- System status -->
+            <div class="flex-shrink-0 p-4">
+                <div class="glass rounded-lg p-3">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="h-8 w-8 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                                <i class="fas fa-server text-green-600 dark:text-green-400"></i>
+                            </div>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-xs font-medium text-gray-300">System Status</p>
+                            <div class="flex items-center">
+                                <span class="h-2 w-2 rounded-full bg-green-500 mr-2 pulse"></span>
+                                <p class="text-xs text-gray-400">All systems operational</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="lg:pl-64 flex flex-col flex-1 min-h-screen">
+        <main class="flex-1 pt-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <!-- Breadcrumb -->
+                <nav class="flex mb-5" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                        <li class="inline-flex items-center">
+                            <a href="{% url 'core:dashboard' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white">
+                                <i class="fas fa-home mr-2"></i>
+                                Home
+                            </a>
+                        </li>
+                        {% block breadcrumb %}{% endblock %}
+                    </ol>
+                </nav>
+
+                <!-- Page header -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between">
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{% block page_title %}Dashboard{% endblock %}</h1>
+                        <div class="flex items-center space-x-2">
+                            {% block page_actions %}{% endblock %}
+                        </div>
+                    </div>
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{% block page_subtitle %}System overview and key metrics{% endblock %}</p>
+                </div>
+
+                <!-- Messages -->
+                <div id="notifications-container">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="notification mb-4 p-4 rounded-lg flex items-center {% if message.tags == 'success' %}bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-100{% elif message.tags == 'error' %}bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-100{% else %}bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-100{% endif %}">
+                                <div class="flex-shrink-0 mr-3">
+                                    {% if message.tags == 'success' %}
+                                        <i class="fas fa-check-circle text-2xl text-green-600 dark:text-green-400"></i>
+                                    {% elif message.tags == 'error' %}
+                                        <i class="fas fa-exclamation-circle text-2xl text-red-600 dark:text-red-400"></i>
+                                    {% else %}
+                                        <i class="fas fa-info-circle text-2xl text-blue-600 dark:text-blue-400"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-1">
+                                    {{ message }}
+                                </div>
+                                <button class="close-notification ml-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none" title="Close notification">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <!-- Page content -->
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-white dark:bg-gray-800 shadow">
+            <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                    <div class="text-sm text-gray-500 dark:text-gray-400 mb-2 md:mb-0">
+                        &copy; {% now "Y" %} Homabay Concrete Products Manufacturer. All rights reserved.
+                    </div>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 tooltip" data-tooltip="Terms of Service">
+                            <span class="sr-only">Terms</span>
+                            <i class="fas fa-file-contract"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 tooltip" data-tooltip="Privacy Policy">
+                            <span class="sr-only">Privacy</span>
+                            <i class="fas fa-shield-alt"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 tooltip" data-tooltip="Help Center">
+                            <span class="sr-only">Help</span>
+                            <i class="fas fa-question-circle"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 tooltip" data-tooltip="Contact Support">
+                            <span class="sr-only">Support</span>
+                            <i class="fas fa-headset"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{% static 'js/base.js' %}"></script>
+    <script src="{% static 'js/script.js' %}"></script>
+    
+    
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="report-container">
+    <h1>Product Movement Report</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Total Movements</th>
+                <th>Movement Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in report_data %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.total_movement }}</td>
+                <td>
+                    <ul>
+                        {% for movement in item.movements %}
+                        <li>
+                            {{ movement.reference_number }} - {{ movement.quantity }} on {{ movement.created_at }}
+                        </li>
+                        {% empty %}
+                        <li>No movements recorded.</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">No products found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

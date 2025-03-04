@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if adjustment %}Edit Stock Adjustment{% else %}Add Stock Adjustment{% endif %} - Inventory Management System
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">{% if adjustment %}Edit Stock Adjustment{% else %}Add Stock Adjustment{% endif %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.adjustment_date.id_for_label }}">Adjustment Date*</label>
+            {{ form.adjustment_date }}
+            {% if form.adjustment_date.errors %}
+                <div class="text-danger">{{ form.adjustment_date.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.reason.id_for_label }}">Reason</label>
+            {{ form.reason }}
+            {% if form.reason.errors %}
+                <div class="text-danger">{{ form.reason.errors }}</div>
+            {% endif %}
+        </div>
+        <a href="{% url 'inventory:stock_adjustment_list' %}" class="btn btn-outline">Cancel</a>
+        <button type="submit" class="btn btn-primary">
+            {% if adjustment %}Update Stock Adjustment{% else %}Create Stock Adjustment{% endif %}
+        </button>
+    </form>
+</div>
+{% endblock %}

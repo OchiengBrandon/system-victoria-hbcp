@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto p-6">
+    <h2 class="text-2xl font-bold">{{ title }}</h2>
+
+    <form method="post" class="bg-white p-4 rounded shadow-md mt-4">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="text-red-600 mb-4">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        {{ batch_form.as_p }}
+
+        <button type="submit" class="btn btn-primary">Create Batch</button>
+        <a href="{% url 'production:batch_list' %}" class="btn btn-secondary">Back to Batch List</a>
+    </form>
+</div>
+{% endblock %}

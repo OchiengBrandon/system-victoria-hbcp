@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load form_tags %}  <!-- Load the custom template tags -->
+
+{% block content %}
+<div class="container mx-auto p-6">
+    <h1 class="text-2xl font-bold">Request Leave</h1>
+
+    <form method="POST" class="bg-white p-4 rounded shadow-md mt-4">
+        {% csrf_token %}
+        <div class="mb-4">
+            {{ form.employee.label }} 
+            {{ form.employee|add_class:"form-control" }}
+        </div>
+        <div class="mb-4">
+            {{ form.leave_type.label }} 
+            {{ form.leave_type|add_class:"form-control" }}
+        </div>
+        <div class="mb-4">
+            {{ form.start_date.label }} 
+            {{ form.start_date|add_class:"form-control" }}
+        </div>
+        <div class="mb-4">
+            {{ form.end_date.label }} 
+            {{ form.end_date|add_class:"form-control" }}
+        </div>
+        <div class="mb-4">
+            {{ form.reason.label }} 
+            {{ form.reason|add_class:"form-control" }}
+        </div>
+
+        <div class="mt-6">
+            <button type="submit" class="btn btn-primary">Submit Request</button>
+            <a href="{% url 'accounts:leave_list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

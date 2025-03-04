@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Adjustments{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Stock Adjustments</h1>
+    <a href="{% url 'inventory:stock_adjustment_create' %}" class="btn btn-primary mb-3">Add Stock Adjustment</a>
+    <form method="get" class="mb-3">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search..." class="form-control">
+        <button type="submit" class="btn btn-secondary mt-2">Search</button>
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Adjustment Number</th>
+                <th>Type</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for adjustment in adjustments %}
+                <tr>
+                    <td>{{ adjustment.adjustment_number }}</td>
+                    <td>{{ adjustment.adjustment_type }}</td>
+                    <td>
+                        <a href="{% url 'inventory:stock_adjustment_detail' adjustment.pk %}" class="btn btn-info">View</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3">No stock adjustments found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        {% for page in adjustments.paginator.page_range %}
+            <a href="?page={{ page }}&q={{ query }}" class="btn btn-outline">{{ page }}</a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

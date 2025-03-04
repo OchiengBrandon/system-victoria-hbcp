@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div class="welcome-section">
+            <h1>{{ title }}</h1>
+            <p class="welcome-message">Welcome back, <span class="user-name">{{ request.user.get_full_name }}</span></p>
+            <p class="date-display" id="currentDate"></p>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="dashboard-card production-card">
+            <div class="card-header">
+                <h3><i class="fas fa-industry"></i> Production Lines</h3>
+            </div>
+            <div class="card-content">
+                <a href="{% url 'production:production_line_list' %}" class="dashboard-link">
+                    <i class="fas fa-list"></i> View Production Lines
+                </a>
+                <a href="{% url 'production:production_line_create' %}" class="dashboard-link">
+                    <i class="fas fa-plus-circle"></i> Create Production Line
+                </a>
+            </div>
+        </div>
+
+        <div class="dashboard-card schedule-card">
+            <div class="card-header">
+                <h3><i class="fas fa-calendar-alt"></i> Production Schedule</h3>
+            </div>
+            <div class="card-content">
+                <a href="{% url 'production:schedule_create' %}" class="dashboard-link">
+                    <i class="fas fa-plus-circle"></i> Create Production Schedule
+                </a>
+                <a href="{% url 'production:schedule_list' %}" class="dashboard-link">
+                    <i class="fas fa-list-alt"></i> View Schedules
+                </a>
+            </div>
+        </div>
+
+        <div class="dashboard-card report-card">
+            <div class="card-header">
+                <h3><i class="fas fa-chart-line"></i> Reports</h3>
+            </div>
+            <div class="card-content">
+                <a href="{% url 'production:generate_report' %}" class="dashboard-link">
+                    <i class="fas fa-file-alt"></i> Generate Production Report
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-visualizations">
+        <h2>Production Metrics</h2>
+        <canvas id="productionChart"></canvas>
+    </div>
+
+    <div class="dashboard-footer">
+        <!-- Footer content can go here -->
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set current date
+        const dateElement = document.getElementById('currentDate');
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        dateElement.textContent = new Date().toLocaleDateString('en-US', options);
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-theme');
+            if (themeToggle) {
+                themeToggle.checked = true;
+            }
+        }
+
+        if (themeToggle) {
+            themeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    body.classList.add('dark-theme');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    body.classList.remove('dark-theme');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+        }
+
+        // Add hover animation to cards
+        const cards = document.querySelectorAll('.dashboard-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.classList.add('card-hover');
+            });
+            card.addEventListener('mouseleave', function() {
+                this.classList.remove('card-hover');
+            });
+        });
+
+        // Add click effect to links
+        const links = document.querySelectorAll('.dashboard-link');
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple-effect');
+                this.appendChild(ripple);
+                
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Create a chart with real data
+        const ctx = document.getElementById('productionChart').getContext('2d');
+        const productionChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: "{{ production_labels|safe }}",  // Use dynamic labels from the view
+                datasets: [{
+                    label: 'Production Output',
+                    data: "{{ production_data|safe }}",  // Use dynamic data from the view
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(255, 206, 86, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

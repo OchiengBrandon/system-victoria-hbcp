@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Category List{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Categories</h1>
+    <div class="mb-3">
+        <a href="{% url 'products:category_create' %}" class="btn btn-primary btn-lg">Create New Category</a>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <ul class="list-group">
+                {% for category in categories %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1">{{ category.name }}</h5>
+                        <small class="text-muted">ID: {{ category.pk }}</small>
+                    </div>
+                    <div>
+                        <a href="{% url 'products:category_update' category.pk %}" class="btn btn-warning btn-sm me-2">Edit</a>
+                        <a href="{% url 'products:category_delete' category.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                    </div>
+                </li>
+                {% empty %}
+                <li class="list-group-item text-center">No categories available.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

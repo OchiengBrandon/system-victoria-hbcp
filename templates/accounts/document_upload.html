@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load form_tags %}
+
+{% block content %}
+<div class="container mx-auto p-6">
+    <h1 class="text-2xl font-bold">Upload Document for {{ employee.get_full_name }}</h1>
+
+    <form method="POST" enctype="multipart/form-data" class="bg-white p-4 rounded shadow-md mt-4">
+        {% csrf_token %}
+
+        <!-- Document Type Selection -->
+        <div class="mb-4">
+            <label for="id_document_type" class="block text-sm font-medium text-gray-700">Document Type</label>
+            {{ form.document_type|add_class:"form-control" }}  <!-- Assuming 'document_type' is in your form -->
+        </div>
+
+        <!-- Document Title -->
+        <div class="mb-4">
+            <label for="id_title" class="block text-sm font-medium text-gray-700">Document Title</label>
+            {{ form.title|add_class:"form-control" }}
+        </div>
+
+        <!-- File Upload -->
+        <div class="mb-4">
+            <label for="id_file" class="block text-sm font-medium text-gray-700">Upload File</label>
+            {{ form.file|add_class:"form-control" }}
+        </div>
+
+        <!-- Expiration Date -->
+        <div class="mb-4">
+            <label for="id_expires_at" class="block text-sm font-medium text-gray-700">Expiration Date</label>
+            {{ form.expires_at|add_class:"form-control" }}  <!-- Assuming 'expires_at' is in your form -->
+        </div>
+
+        <!-- Notes -->
+        <div class="mb-4">
+            <label for="id_notes" class="block text-sm font-medium text-gray-700">Notes</label>
+            {{ form.notes|add_class:"form-control" }}  <!-- Assuming 'notes' is in your form -->
+        </div>
+
+        <button type="submit" class="btn btn-primary">Upload Document</button>
+        <a href="{% url 'accounts:employee_detail' employee.pk %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

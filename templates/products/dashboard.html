@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div class="welcome-section">
+            <h1>{{ title }}</h1>
+            <p class="welcome-message">Welcome back, <span class="user-name">{{ request.user.get_full_name }}</span></p>
+            <p class="date-display" id="currentDate"></p>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="dashboard-card product-card">
+            <div class="card-header">
+                <h3><i class="fas fa-box"></i> Products</h3>
+            </div>
+            <div class="card-content">
+                <a href="{% url 'products:product_list' %}" class="dashboard-link">
+                    <i class="fas fa-list"></i> View Products
+                </a>
+                <a href="{% url 'products:product_create' %}" class="dashboard-link">
+                    <i class="fas fa-plus-circle"></i> Create Product
+                </a>
+                <a href="{% url 'products:product_report' %}" class="dashboard-link">
+                    <i class="fas fa-chart-pie"></i> Product Reports
+                </a>
+            </div>
+        </div>
+
+        <div class="dashboard-card category-card">
+            <div class="card-header">
+                <h3><i class="fas fa-tags"></i> Categories</h3>
+            </div>
+            <div class="card-content">
+                <a href="{% url 'products:category_list' %}" class="dashboard-link">
+                    <i class="fas fa-list-alt"></i> View Categories
+                </a>
+                <a href="{% url 'products:category_create' %}" class="dashboard-link">
+                    <i class="fas fa-plus-circle"></i> Create Category
+                </a>
+            </div>
+        </div>
+
+        <div class="dashboard-card movement-card">
+            <div class="card-header">
+                <h3><i class="fas fa-exchange-alt"></i> Movements</h3>
+            </div>
+            <div class="card-content">
+                <a href="{% url 'products:product_movement_list' %}" class="dashboard-link">
+                    <i class="fas fa-arrow-right"></i> View Movements
+                </a>
+                <a href="{% url 'products:product_movement_create' %}" class="dashboard-link">
+                    <i class="fas fa-plus-circle"></i> Record Movement
+                </a>
+            </div>
+        </div>
+
+        <div class="dashboard-card report-card">
+            <div class="card-header">
+                <h3><i class="fas fa-chart-line"></i> Reports</h3>
+            </div>
+            <div class="card-content">
+                <a href="{% url 'products:product_report' %}" class="dashboard-link">
+                    <i class="fas fa-file-alt"></i> Generate Product Report
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-footer">
+        <p>&copy; {{ current_year }} Your Company Name. All rights reserved.</p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set current date
+        const dateElement = document.getElementById('currentDate');
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        dateElement.textContent = new Date().toLocaleDateString('en-US', options);
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-theme');
+            if (themeToggle) {
+                themeToggle.checked = true;
+            }
+        }
+
+        if (themeToggle) {
+            themeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    body.classList.add('dark-theme');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    body.classList.remove('dark-theme');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+        }
+
+        // Add hover animation to cards
+        const cards = document.querySelectorAll('.dashboard-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.classList.add('card-hover');
+            });
+            card.addEventListener('mouseleave', function() {
+                this.classList.remove('card-hover');
+            });
+        });
+
+        // Add click effect to links
+        const links = document.querySelectorAll('.dashboard-link');
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple-effect');
+                this.appendChild(ripple);
+
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+    });
+</script>
+{% endblock %}
