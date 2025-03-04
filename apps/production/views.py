@@ -375,6 +375,9 @@ def add_employee_costs_to_batch(request, batch_pk):
                 messages.success(request, 'Employee costs added successfully.')
                 return redirect('production:batch_detail', pk=batch.pk)
 
+        else:
+            messages.error(request, 'Please correct the errors below.')
+
     else:
         employee_formset = EmployeeCostFormSet(queryset=EmployeeCost.objects.none())
 
@@ -383,7 +386,6 @@ def add_employee_costs_to_batch(request, batch_pk):
         'batch': batch,
         'title': 'Add Employee Costs to Batch'
     })
-
 
 # Update employee cost
 @login_required
