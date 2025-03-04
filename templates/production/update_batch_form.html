@@ -1,40 +1,22 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <h2 class="my-4">{{ title }}</h2>
+<div class="container mx-auto p-6">
+    <h2 class="text-2xl font-bold">{{ title }}</h2>
     <p class="mb-3">Batch: <strong>{{ batch.batch_number }}</strong></p>
 
-    <form method="post">
+    <form method="post" class="bg-white p-4 rounded shadow-md mt-4">
         {% csrf_token %}
         
+        {% if batch_form.non_field_errors %}
+            <div class="text-red-600 mb-4">
+                {{ batch_form.non_field_errors }}
+            </div>
+        {% endif %}
+
         <div class="mb-4">
-            <h4>Batch Details</h4>
+            <h4 class="text-lg font-semibold">Batch Details</h4>
             {{ batch_form.as_p }}  <!-- Render the batch form -->
-        </div>
-
-        <div class="mb-4">
-            <h4>Material Usage</h4>
-            {{ material_formset.management_form }}
-            <div id="material-formset-area">
-                {% for form in material_formset %}
-                    <div class="formset-field border p-3 mb-3 rounded">
-                        {{ form.as_p }}  <!-- Render each material form -->
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <div class="mb-4">
-            <h4>Employee Costs</h4>
-            {{ employee_formset.management_form }}
-            <div id="employee-formset-area">
-                {% for form in employee_formset %}
-                    <div class="formset-field border p-3 mb-3 rounded">
-                        {{ form.as_p }}  <!-- Render each employee cost form -->
-                    </div>
-                {% endfor %}
-            </div>
         </div>
 
         <button type="submit" class="btn btn-primary">Update Batch</button>
