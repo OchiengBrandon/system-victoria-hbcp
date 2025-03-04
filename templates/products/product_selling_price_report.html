@@ -1,168 +1,1690 @@
-{% extends 'base.html' %}
-{% load custom_filters %}
-{% load currency_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} - Selling Price Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.0.1/build/global/luxon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.2.0/dist/chartjs-adapter-luxon.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #4cc9f0;
+            --text-color: #2b2d42;
+            --text-color-light: #8d99ae;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(149, 157, 165, 0.2);
+            --shadow-color-dark: rgba(0, 0, 0, 0.1);
+            --highlight-color: rgba(67, 97, 238, 0.1);
+            --border-color: #e9ecef;
+            --success-color: #38b000;
+            --warning-color: #ffaa00;
+            --danger-color: #d90429;
+            --info-color: #4cc9f0;
+        }
 
-{% block content %}
-<div class="container mt-5">
-    <h1 class="mb-4 text-center">Product Selling Price Report: {{ product.name }}</h1>
+        .dark-mode {
+            --primary-color: #4cc9f0;
+            --secondary-color: #4361ee;
+            --accent-color: #3a0ca3;
+            --text-color: #e9ecef;
+            --text-color-light: #adb5bd;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --shadow-color-dark: rgba(0, 0, 0, 0.6);
+            --highlight-color: rgba(76, 201, 240, 0.1);
+            --border-color: #2b2d42;
+        }
 
-    <!-- Visualizations Section -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card animate__animated animate__fadeInUp">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .header-title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .header-title p {
+            font-size: 1rem;
+            color: var(--text-color-light);
+        }
+
+        .theme-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            border-radius: 15px;
+            background-color: var(--card-bg);
+            box-shadow: 0 4px 6px var(--shadow-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 0 5px;
+            justify-content: space-between;
+        }
+
+        .theme-toggle i {
+            font-size: 14px;
+            z-index: 1;
+        }
+
+        .theme-toggle .fa-sun {
+            color: #ffaa00;
+        }
+
+        .theme-toggle .fa-moon {
+            color: #3a0ca3;
+        }
+
+        .theme-toggle::after {
+            content: "";
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            left: 3px;
+            transition: transform 0.3s;
+        }
+
+        .dark-mode .theme-toggle::after {
+            transform: translateX(30px);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 8px 8px 16px var(--shadow-color), 
+                        -8px -8px 16px rgba(255, 255, 255, 0.8);
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .dark-mode .card {
+            box-shadow: 8px 8px 16px var(--shadow-color-dark), 
+                        -8px -8px 16px rgba(30, 30, 30, 0.8);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .card-header h2 i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .card-body {
+            padding: 10px 0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 4px 4px 10px var(--shadow-color), 
+                        -4px -4px 10px rgba(255, 255, 255, 0.8);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s;
+        }
+
+        .dark-mode .info-item {
+            box-shadow: 4px 4px 10px var(--shadow-color-dark), 
+                        -4px -4px 10px rgba(30, 30, 30, 0.8);
+        }
+
+        .info-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: var(--text-color-light);
+            margin-bottom: 8px;
+        }
+
+        .info-value {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .info-detail {
+            font-size: 0.8rem;
+            color: var(--text-color-light);
+            margin-top: 5px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: inset 3px 3px 6px var(--shadow-color), 
+                        inset -3px -3px 6px rgba(255, 255, 255, 0.8);
+            padding: 5px;
+        }
+
+        .dark-mode .table-container {
+            box-shadow: inset 3px 3px 6px var(--shadow-color-dark), 
+                        inset -3px -3px 6px rgba(30, 30, 30, 0.8);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            background-color: var(--highlight-color);
+            color: var(--primary-color);
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            position: relative;
+        }
+
+        th:hover {
+            background-color: var(--highlight-color);
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: var(--highlight-color);
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-completed {
+            background-color: rgba(56, 176, 0, 0.15);
+            color: var(--success-color);
+        }
+
+        .status-in-progress {
+            background-color: rgba(255, 170, 0, 0.15);
+            color: var(--warning-color);
+        }
+
+        .status-cancelled {
+            background-color: rgba(217, 4, 41, 0.15);
+            color: var(--danger-color);
+        }
+
+        .status-pending {
+            background-color: rgba(76, 201, 240, 0.15);
+            color: var(--info-color);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            border: none;
+            box-shadow: 3px 3px 6px var(--shadow-color), 
+                        -3px -3px 6px rgba(255, 255, 255, 0.8);
+        }
+
+        .dark-mode .btn {
+            box-shadow: 3px 3px 6px var(--shadow-color-dark), 
+                        -3px -3px 6px rgba(30, 30, 30, 0.8);
+        }
+
+        .btn:active {
+            box-shadow: inset 2px 2px 5px var(--shadow-color), 
+                        inset -2px -2px 5px rgba(255, 255, 255, 0.8);
+        }
+
+        .dark-mode .btn:active {
+            box-shadow: inset 2px 2px 5px var(--shadow-color-dark), 
+                        inset -2px -2px 5px rgba(30, 30, 30, 0.8);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .btn i {
+            margin-right: 5px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-item {
+            position: relative;
+        }
+
+        .filter-select {
+            appearance: none;
+            padding: 8px 35px 8px 15px;
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            box-shadow: 3px 3px 6px var(--shadow-color), 
+                        -3px -3px 6px rgba(255, 255, 255, 0.8);
+        }
+
+        .dark-mode .filter-select {
+            box-shadow: 3px 3px 6px var(--shadow-color-dark), 
+                        -3px -3px 6px rgba(30, 30, 30, 0.8);
+        }
+
+        .filter-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--text-color-light);
+        }
+
+        .calculation-breakdown {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: var(--highlight-color);
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .breakdown-label {
+            font-size: 0.9rem;
+        }
+
+        .breakdown-value {
+            font-size: 0.9rem;
+        }
+
+        .quality-check-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: var(--highlight-color);
+        }
+
+        .quality-check-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .quality-check-result {
+            font-weight: 600;
+        }
+
+        .result-pass {
+            color: var(--success-color);
+        }
+
+        .result-fail {
+            color: var(--danger-color);
+        }
+
+        .quality-check-details {
+            display: flex;
+            gap: 20px;
+            font-size: 0.85rem;
+            color: var(--text-color-light);
+        }
+
+        .expand-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .expand-btn i {
+            margin-left: 5px;
+            transition: transform 0.3s;
+        }
+
+        .expanded .expand-btn i {
+            transform: rotate(180deg);
+        }
+
+        .expandable-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .expanded .expandable-content {
+            max-height: 500px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .price-trend-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            font-size: 0.8rem;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .summary-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .summary-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .summary-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--highlight-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary-color);
+        }
+
+        .summary-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+
+        .summary-detail {
+            font-size: 0.85rem;
+            color: var(--text-color-light);
+            margin-top: auto;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .batch-details {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: var(--highlight-color);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .detail-label {
+            font-size: 0.9rem;
+            color: var(--text-color-light);
+        }
+
+        .detail-value {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .price-history-point {
+            cursor: pointer;
+            transition: r 0.3s;
+        }
+
+        .price-history-point:hover {
+            r: 8;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            box-shadow: inset 2px 2px 5px var(--shadow-color),
+                        inset -2px -2px 5px rgba(255, 255, 255, 0.8);
+        }
+
+        .dark-mode .search-input {
+            box-shadow: inset 2px 2px 5px var(--shadow-color-dark),
+                        inset -2px -2px 5px rgba(30, 30, 30, 0.8);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-color-light);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-color-light);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 5px;
+        }
+
+        .page-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            box-shadow: 2px 2px 5px var(--shadow-color),
+                        -2px -2px 5px rgba(255, 255, 255, 0.8);
+            transition: all 0.3s;
+        }
+
+        .dark-mode .page-btn {
+            box-shadow: 2px 2px 5px var(--shadow-color-dark),
+                        -2px -2px 5px rgba(30, 30, 30, 0.8);
+        }
+
+        .page-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .page-btn:hover:not(.active) {
+            background-color: var(--highlight-color);
+        }
+
+        .page-btn:active {
+            box-shadow: inset 1px 1px 3px var(--shadow-color),
+                        inset -1px -1px 3px rgba(255, 255, 255, 0.8);
+        }
+
+        .dark-mode .page-btn:active {
+            box-shadow: inset 1px 1px 3px var(--shadow-color-dark),
+                        inset -1px -1px 3px rgba(30, 30, 30, 0.8);
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            transition: all 0.3s;
+        }
+
+        .floating-btn:hover {
+            transform: translateY(-5px);
+        }
+
+        .floating-btn i {
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .theme-toggle {
+                align-self: flex-end;
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .info-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .filters {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .filter-select {
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .floating-btn {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        /* Background animation */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--primary-color);
+            opacity: 0.3;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+            }
+            25% {
+                transform: translateY(-50px) translateX(50px);
+            }
+            50% {
+                transform: translateY(-100px) translateX(0);
+            }
+            75% {
+                transform: translateY(-50px) translateX(-50px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background animation -->
+    <div class="background-animation" id="background-animation"></div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-title">
+                <h1>Product Selling Price Report</h1>
+                <p>Detailed analysis and calculation for {{ product.name }}</p>
+            </div>
+            <div class="theme-toggle" id="theme-toggle">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="card summary-card">
+                <div class="summary-header">
+                    <div class="summary-icon">
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <div class="summary-title">Current Selling Price</div>
+                </div>
+                <div class="summary-value">${{ current_selling_price|floatformat:2 }}</div>
+                <div class="summary-detail">
+                    <i class="fas fa-info-circle"></i> Price includes a 20% markup over production costs
+                </div>
+                <div class="batch-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Total Batches</div>
+                        <div class="detail-value">{{ total_batches }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Total Quantity Produced</div>
+                        <div class="detail-value">{{ calculation_details.total_quantity_produced|floatformat:0 }} units</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Average Selling Price</div>
+                        <div class="detail-value">${{ average_selling_price|floatformat:2 }}/unit</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
                 <div class="card-header">
-                    <h3>Cost Breakdown Visualization</h3>
+                    <h2><i class="fas fa-chart-line"></i> Cost Breakdown</h2>
                 </div>
                 <div class="card-body">
-                    <canvas id="costChart"></canvas>
+                    <div class="chart-container">
+                        <canvas id="costBreakdownChart"></canvas>
+                    </div>
+                    <div class="calculation-breakdown">
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Employee Costs</div>
+                            <div class="breakdown-value">${{ calculation_details.total_employee_cost|floatformat:2 }}</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Material Costs</div>
+                            <div class="breakdown-value">${{ calculation_details.total_material_cost|floatformat:2 }}</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Total Costs</div>
+                            <div class="breakdown-value">${{ calculation_details.total_cost|floatformat:2 }}</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Markup (20%)</div>
+                            <div class="breakdown-value">${{ calculation_details.total_cost|multiply:0.2|floatformat:2 }}</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Final Selling Price</div>
+                            <div class="breakdown-value">${{ calculation_details.current_selling_price|floatformat:2 }}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card animate__animated animate__fadeInUp">
-                <div class="card-header">
-                    <h3>Current Selling Price</h3>
+
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-history"></i> Price History</h2>
+                <button class="btn btn-secondary" id="togglePriceView">
+                    <i class="fas fa-exchange-alt"></i> Toggle View
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="price-trend-container">
+                    <canvas id="priceHistoryChart"></canvas>
                 </div>
-                <div class="card-body text-center">
-                    <p>The current selling price is: <strong>{{ current_selling_price|to_kes }}</strong></p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-boxes"></i> Production Batches</h2>
+            </div>
+            <div class="card-body">
+                <div class="filters">
+                    <div class="filter-item">
+                        <select class="filter-select" id="statusFilter">
+                            <option value="all">All Statuses</option>
+                            <option value="completed">Completed</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="cancelled">Cancelled</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                        <div class="filter-icon">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="filter-item">
+                        <select class="filter-select" id="sortFilter">
+                            <option value="date_desc">Date (Newest)</option>
+                            <option value="date_asc">Date (Oldest)</option>
+                            <option value="price_desc">Price (Highest)</option>
+                            <option value="price_asc">Price (Lowest)</option>
+                            <option value="quantity_desc">Quantity (Highest)</option>
+                            <option value="quantity_asc">Quantity (Lowest)</option>
+                        </select>
+                        <div class="filter-icon">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" id="batchSearch" placeholder="Search batches...">
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="batchesTable">
+                        <thead>
+                            <tr>
+                                <th data-sort="batch">Batch #</th>
+                                <th data-sort="date">Production Date</th>
+                                <th data-sort="quantity">Quantity</th>
+                                <th data-sort="price">Unit Price</th>
+                                <th data-sort="status">Status</th>
+                                <th data-sort="actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for batch in historical_data %}
+                            <tr data-batch-id="{{ batch.batch_number }}">
+                                <td>{{ batch.batch_number }}</td>
+                                <td>{{ batch.production_date|date:"M d, Y" }}</td>
+                                <td>{{ batch.quantity_produced|floatformat:0 }} units</td>
+                                <td>${{ batch.selling_price|floatformat:2 }}</td>
+                                <td>
+                                    <span class="status-badge status-{{ batch.status|lower }}">
+                                        {{ batch.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="expand-btn" data-batch="{{ batch.batch_number }}">
+                                        Details <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="expandable-row" data-batch="{{ batch.batch_number }}" style="display: none;">
+                                <td colspan="6">
+                                    <div class="expandable-content">
+                                        <div class="batch-details">
+                                            <div class="detail-row">
+                                                <div class="detail-label">Employee Cost</div>
+                                                <div class="detail-value">${{ batch.total_employee_cost|floatformat:2 }}</div>
+                                            </div>
+                                            <div class="detail-row">
+                                                <div class="detail-label">Material Cost</div>
+                                                <div class="detail-value">${{ batch.total_material_cost|floatformat:2 }}</div>
+                                            </div>
+                                            <div class="detail-row">
+                                                <div class="detail-label">Total Cost</div>
+                                                <div class="detail-value">${{ batch.total_cost|floatformat:2 }}</div>
+                                            </div>
+                                            <div class="detail-row">
+                                                <div class="detail-label">Quantity Rejected</div>
+                                                <div class="detail-value">{{ batch.quantity_rejected|floatformat:0 }} units</div>
+                                            </div>
+                                            <div class="detail-row">
+                                                <div class="detail-label">Rejection Rate</div>
+                                                <div class="detail-value">
+                                                    {{ batch.quantity_rejected|divide:batch.quantity_produced|multiply:100|floatformat:1 }}%
+                                                    <div class="progress-container">
+                                                        <div class="progress-bar" style="width: {{ batch.quantity_rejected|divide:batch.quantity_produced|multiply:100|floatformat:1 }}%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            {% if batch.quality_check_results %}
+                                            <h4 style="margin-top: 15px; margin-bottom: 10px;">Quality Checks</h4>
+                                            {% for check in batch.quality_check_results %}
+                                            <div class="quality-check-item">
+                                                <div class="quality-check-header">
+                                                    <div class="quality-check-date">{{ check.check_date|date:"M d, Y" }}</div>
+                                                    <div class="quality-check-result {% if check.result == 'Pass' %}result-pass{% else %}result-fail{% endif %}">
+                                                        {{ check.result }}
+                                                    </div>
+                                                </div>
+                                                <div class="quality-check-details">
+                                                    <div>Strength Test: {{ check.strength_test }}</div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                            {% else %}
+                                            <div class="empty-state" style="margin-top: 15px;">
+                                                <i class="fas fa-clipboard-check"></i>
+                                                <p>No quality checks recorded for this batch</p>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6">
+                                    <div class="empty-state">
+                                        <i class="fas fa-box-open"></i>
+                                        <p>No production batches found for this product</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination" id="pagination">
+                    <!-- Pagination will be generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-calculator"></i> Price Calculation Details</h2>
+            </div>
+            <div class="card-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Total Cost</div>
+                        <div class="info-value">${{ calculation_details.total_cost|floatformat:2 }}</div>
+                        <div class="info-detail">Combined employee and material costs</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Cost Per Unit</div>
+                        <div class="info-value">${{ calculation_details.total_cost|divide:calculation_details.total_quantity_produced|floatformat:2 }}</div>
+                        <div class="info-detail">Base production cost per unit</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Markup</div>
+                        <div class="info-value">20%</div>
+                        <div class="info-detail">Standard profit margin</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Markup Amount</div>
+                        <div class="info-value">${{ calculation_details.total_cost|multiply:0.2|floatformat:2 }}</div>
+                        <div class="info-detail">Additional profit per unit</div>
+                    </div>
+                </div>
+
+                <div class="calculation-breakdown">
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">Total Employee Cost</div>
+                        <div class="breakdown-value">${{ calculation_details.total_employee_cost|floatformat:2 }}</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">Total Material Cost</div>
+                        <div class="breakdown-value">${{ calculation_details.total_material_cost|floatformat:2 }}</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">Total Production Cost</div>
+                        <div class="breakdown-value">${{ calculation_details.total_cost|floatformat:2 }}</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">Total Units Produced</div>
+                        <div class="breakdown-value">{{ calculation_details.total_quantity_produced|floatformat:0 }}</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">Base Cost Per Unit</div>
+                        <div class="breakdown-value">${{ calculation_details.total_cost|divide:calculation_details.total_quantity_produced|floatformat:2 }}</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">Markup (20%)</div>
+                        <div class="breakdown-value">${{ calculation_details.total_cost|divide:calculation_details.total_quantity_produced|multiply:0.2|floatformat:2 }}/unit</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">Final Selling Price</div>
+                        <div class="breakdown-value">${{ current_selling_price|floatformat:2 }}</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Cost Breakdown Section -->
-    <div class="card mb-4 animate__animated animate__fadeInUp">
-        <div class="card-header">
-            <h3>Cost Breakdown</h3>
-        </div>
-        <div class="card-body">
-            <ul class="list-group">
-                <li class="list-group-item">Total Employee Cost: {{ calculation_details.total_employee_cost|to_kes }}</li>
-                <li class="list-group-item">Total Material Cost: {{ calculation_details.total_material_cost|to_kes }}</li>
-                <li class="list-group-item">Total Cost: {{ calculation_details.total_cost|to_kes }}</li>
-                <li class="list-group-item">Total Quantity Produced: {{ calculation_details.total_quantity_produced }}</li>
-                <li class="list-group-item">Markup: {{ calculation_details.markup|floatformat:2 }}</li>
-            </ul>
-        </div>
+    <!-- Print/Export button -->
+    <div class="floating-btn" id="printBtn" title="Print Report">
+        <i class="fas fa-print"></i>
     </div>
 
-    <!-- Calculation Steps Section -->
-    <div class="card mb-4 animate__animated animate__fadeInUp">
-        <div class="card-header">
-            <h3>Calculation Steps</h3>
-        </div>
-        <div class="card-body">
-            <p>Current Selling Price = (Total Cost / Total Quantity Produced) * Markup</p>
-            <p>Current Selling Price = ({{ calculation_details.total_cost|to_kes }} / {{ calculation_details.total_quantity_produced }}) * {{ calculation_details.markup|floatformat:2 }} = {{ current_selling_price|to_kes }}</p>
-        </div>
-    </div>
-
-    <!-- Batch and Historical Data Section -->
-    <div class="card mb-4 animate__animated animate__fadeInUp">
-        <div class="card-header">
-            <h2>Batch and Historical Data</h2>
-        </div>
-        <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Batch Number</th>
-                        <th>Quantity Produced</th>
-                        <th>Quantity Rejected</th>
-                        <th>Status</th>
-                        <th>Total Employee Cost</th>
-                        <th>Total Material Cost</th>
-                        <th>Total Cost</th>
-                        <th>Selling Price</th>
-                        <th>Production Date</th>
-                        <th>Quality Check Results</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for batch in historical_data %}
-                    <tr>
-                        <td>{{ batch.batch_number }}</td>
-                        <td>{{ batch.quantity_produced }}</td>
-                        <td>{{ batch.quantity_rejected }}</td>
-                        <td>{{ batch.status }}</td>
-                        <td>{{ batch.total_employee_cost|to_kes }}</td>
-                        <td>{{ batch.total_material_cost|to_kes }}</td>
-                        <td>{{ batch.total_cost|to_kes }}</td>
-                        <td>{{ batch.selling_price|to_kes }}</td>
-                        <td>{{ batch.production_date }}</td>
-                        <td>
-                            {% if batch.quality_check_results %}
-                                <ul>
-                                    {% for qc in batch.quality_check_results %}
-                                        <li>Date: {{ qc.check_date }} - Strength Test: {{ qc.strength_test }} - Result: {{ qc.result }}</li>
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                No quality checks available.
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="10">No historical data available for this product.</td>
-                    </tr>
+    <script>
+        // Sample data conversion from Django template to JavaScript
+        const historicalData = [
+            {% for batch in historical_data %}
+            {
+                batchNumber: "{{ batch.batch_number }}",
+                productionDate: "{{ batch.production_date|date:'Y-m-d' }}",
+                quantityProduced: {{ batch.quantity_produced|default:0 }},
+                quantityRejected: {{ batch.quantity_rejected|default:0 }},
+                status: "{{ batch.status }}",
+                sellingPrice: {{ batch.selling_price|default:0 }},
+                employeeCost: {{ batch.total_employee_cost|default:0 }},
+                materialCost: {{ batch.total_material_cost|default:0 }},
+                totalCost: {{ batch.total_cost|default:0 }},
+                qualityChecks: [
+                    {% for check in batch.quality_check_results %}
+                    {
+                        checkDate: "{{ check.check_date|date:'Y-m-d' }}",
+                        strengthTest: "{{ check.strength_test }}",
+                        result: "{{ check.result }}"
+                    }{% if not forloop.last %},{% endif %}
                     {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+                ]
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
 
-    <a href="{% url 'products:product_list' %}" class="btn btn-primary">Back to Product List</a>
-</div>
+        const calculationDetails = {
+            totalEmployeeCost: {{ calculation_details.total_employee_cost|default:0 }},
+            totalMaterialCost: {{ calculation_details.total_material_cost|default:0 }},
+            totalCost: {{ calculation_details.total_cost|default:0 }},
+            totalQuantityProduced: {{ calculation_details.total_quantity_produced|default:0 }},
+            markup: {{ calculation_details.markup|default:1.2 }},
+            currentSellingPrice: {{ calculation_details.current_selling_price|default:0 }}
+        };
 
-<!-- Chart.js Script -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const ctx = document.getElementById('costChart').getContext('2d');
-    const costChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Total Employee Cost', 'Total Material Cost', 'Total Cost'],
-            datasets: [{
-                label: 'Cost in KES',
-                data: [
-                    "{{ calculation_details.total_employee_cost }}",  // Numeric values for chart
-                    "{{ calculation_details.total_material_cost }}",  // Numeric values for chart
-                    "{{ calculation_details.total_cost }}"  // Numeric values for chart
-                ],
-                backgroundColor: [
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 99, 132, 0.6)',
-                    'rgba(75, 192, 192, 0.6)'
-                ],
-                borderColor: [
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(75, 192, 192, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            },
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
+        // Theme toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize theme from localStorage or default to light
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+
+            // Theme toggle button
+            const themeToggle = document.getElementById('theme-toggle');
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                const currentTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+                localStorage.setItem('theme', currentTheme);
+                updateChartsTheme();
+            });
+
+            // Create background animation
+            createBackgroundAnimation();
+
+            // Initialize charts
+            initCharts();
+
+            // Initialize batch details expansion
+            initBatchDetails();
+
+            // Initialize filters and search
+            initFiltersAndSearch();
+
+            // Initialize pagination
+            initPagination();
+
+            // Print button
+            document.getElementById('printBtn').addEventListener('click', function() {
+                window.print();
+            });
+        });
+
+        // Create floating background animation
+        function createBackgroundAnimation() {
+            const container = document.getElementById('background-animation');
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random size between 50px and 150px
+                const size = Math.random() * 100 + 50;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random position
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // Random animation delay
+                particle.style.animationDelay = `${Math.random() * 15}s`;
+                
+                container.appendChild(particle);
+            }
+        }
+
+        // Initialize Charts
+        function initCharts() {
+            // Cost Breakdown Chart
+            const costCtx = document.getElementById('costBreakdownChart').getContext('2d');
+            const costChart = new Chart(costCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Employee Costs', 'Material Costs'],
+                    datasets: [{
+                        data: [
+                            calculationDetails.totalEmployeeCost,
+                            calculationDetails.totalMaterialCost
+                        ],
+                        backgroundColor: [
+                            '#4361ee',
+                            '#4cc9f0'
+                        ],
+                        borderColor: 'rgba(255, 255, 255, 0.8)',
+                        borderWidth: 2
+                    }]
                 },
-                title: {
-                    display: true,
-                    text: 'Cost Breakdown Visualization'
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    family: 'Poppins',
+                                    size: 12
+                                },
+                                color: document.body.classList.contains('dark-mode') ? '#e9ecef' : '#2b2d42'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${context.label}: $${value.toFixed(2)} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Price History Chart
+            const priceCtx = document.getElementById('priceHistoryChart').getContext('2d');
+            
+            // Sort data by date
+            const sortedData = [...historicalData].sort((a, b) => 
+                new Date(a.productionDate) - new Date(b.productionDate)
+            );
+            
+            const priceChart = new Chart(priceCtx, {
+                type: 'line',
+                data: {
+                    labels: sortedData.map(item => item.productionDate),
+                    datasets: [
+                        {
+                            label: 'Selling Price per Unit',
+                            data: sortedData.map(item => item.sellingPrice),
+                            borderColor: '#4361ee',
+                            backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#4361ee',
+                            pointBorderColor: '#fff',
+                            pointRadius: 5,
+                            pointHoverRadius: 8,
+                            pointHitRadius: 10,
+                            pointBorderWidth: 2,
+                            pointStyle: 'circle',
+                            borderWidth: 3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'MMM d'
+                                }
+                            },
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: document.body.classList.contains('dark-mode') ? '#e9ecef' : '#2b2d42'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: document.body.classList.contains('dark-mode') ? 
+                                    'rgba(233, 236, 239, 0.1)' : 
+                                    'rgba(43, 45, 66, 0.1)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toFixed(2);
+                                },
+                                color: document.body.classList.contains('dark-mode') ? '#e9ecef' : '#2b2d42'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    family: 'Poppins',
+                                    size: 12
+                                },
+                                color: document.body.classList.contains('dark-mode') ? '#e9ecef' : '#2b2d42'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const index = context.dataIndex;
+                                    const batch = sortedData[index];
+                                    return [
+                                        `Batch: ${batch.batchNumber}`,
+                                        `Price: $${batch.sellingPrice.toFixed(2)}`,
+                                        `Quantity: ${batch.quantityProduced} units`,
+                                        `Status: ${batch.status}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+
+            // Toggle between price and cost view
+            document.getElementById('togglePriceView').addEventListener('click', function() {
+                const currentDataset = priceChart.data.datasets[0];
+                const isShowingPrice = currentDataset.label.includes('Selling Price');
+                
+                if (isShowingPrice) {
+                    currentDataset.label = 'Production Cost per Unit';
+                    currentDataset.data = sortedData.map(item => item.totalCost / item.quantityProduced);
+                    currentDataset.borderColor = '#4cc9f0';
+                    currentDataset.backgroundColor = 'rgba(76, 201, 240, 0.1)';
+                    currentDataset.pointBackgroundColor = '#4cc9f0';
+                } else {
+                    currentDataset.label = 'Selling Price per Unit';
+                    currentDataset.data = sortedData.map(item => item.sellingPrice);
+                    currentDataset.borderColor = '#4361ee';
+                    currentDataset.backgroundColor = 'rgba(67, 97, 238, 0.1)';
+                    currentDataset.pointBackgroundColor = '#4361ee';
+                }
+                
+                priceChart.update();
+            });
+
+            // Store chart references for theme updates
+            window.charts = {
+                costChart,
+                priceChart
+            };
+        }
+
+        // Update charts when theme changes
+        function updateChartsTheme() {
+            const textColor = document.body.classList.contains('dark-mode') ? '#e9ecef' : '#2b2d42';
+            const gridColor = document.body.classList.contains('dark-mode') ? 
+                'rgba(233, 236, 239, 0.1)' : 
+                'rgba(43, 45, 66, 0.1)';
+            
+            if (window.charts) {
+                // Update Cost Chart
+                if (window.charts.costChart) {
+                    window.charts.costChart.options.plugins.legend.labels.color = textColor;
+                    window.charts.costChart.update();
+                }
+                
+                // Update Price Chart
+                if (window.charts.priceChart) {
+                    window.charts.priceChart.options.scales.x.ticks.color = textColor;
+                    window.charts.priceChart.options.scales.y.ticks.color = textColor;
+                    window.charts.priceChart.options.scales.y.grid.color = gridColor;
+                    window.charts.priceChart.options.plugins.legend.labels.color = textColor;
+                    window.charts.priceChart.update();
                 }
             }
         }
-    });
-</script>
 
-<!-- Animation Library -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-{% endblock %}
+        // Initialize batch details expansion
+        function initBatchDetails() {
+            const expandButtons = document.querySelectorAll('.expand-btn');
+            
+            expandButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const batchNumber = this.getAttribute('data-batch');
+                    const expandableRow = document.querySelector(`.expandable-row[data-batch="${batchNumber}"]`);
+                    
+                    if (expandableRow.style.display === 'none') {
+                        expandableRow.style.display = 'table-row';
+                        this.classList.add('expanded');
+                        setTimeout(() => {
+                            expandableRow.querySelector('.expandable-content').style.maxHeight = '500px';
+                        }, 10);
+                    } else {
+                        expandableRow.querySelector('.expandable-content').style.maxHeight = '0';
+                        this.classList.remove('expanded');
+                        setTimeout(() => {
+                            expandableRow.style.display = 'none';
+                        }, 300);
+                    }
+                });
+            });
+        }
+
+        // Initialize filters and search
+        function initFiltersAndSearch() {
+            const statusFilter = document.getElementById('statusFilter');
+            const sortFilter = document.getElementById('sortFilter');
+            const searchInput = document.getElementById('batchSearch');
+            
+            function applyFilters() {
+                const status = statusFilter.value;
+                const sort = sortFilter.value;
+                const searchTerm = searchInput.value.toLowerCase();
+                
+                const rows = document.querySelectorAll('#batchesTable tbody tr:not(.expandable-row)');
+                
+                rows.forEach(row => {
+                    // First hide expandable rows
+                    const batchNumber = row.getAttribute('data-batch-id');
+                    if (batchNumber) {
+                        const expandableRow = document.querySelector(`.expandable-row[data-batch="${batchNumber}"]`);
+                        if (expandableRow) {
+                            expandableRow.style.display = 'none';
+                        }
+                        
+                        const expandBtn = row.querySelector('.expand-btn');
+                        if (expandBtn) {
+                            expandBtn.classList.remove('expanded');
+                        }
+                    }
+                    
+                    // Apply status filter
+                    let statusMatch = true;
+                    if (status !== 'all') {
+                        const rowStatus = row.querySelector('.status-badge')?.textContent.trim().toLowerCase();
+                        statusMatch = rowStatus === status;
+                    }
+                    
+                    // Apply search filter
+                    let searchMatch = true;
+                    if (searchTerm) {
+                        searchMatch = Array.from(row.cells).some(cell => 
+                            cell.textContent.toLowerCase().includes(searchTerm)
+                        );
+                    }
+                    
+                    // Show/hide based on filters
+                    row.style.display = statusMatch && searchMatch ? '' : 'none';
+                });
+                
+                // Apply sorting
+                sortTable(sort);
+                
+                // Update pagination after filtering
+                updatePagination();
+            }
+            
+            function sortTable(sortOption) {
+                const tbody = document.querySelector('#batchesTable tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr:not(.expandable-row)'));
+                
+                // Filter visible rows
+                const visibleRows = rows.filter(row => row.style.display !== 'none');
+                
+                // Sort visible rows
+                visibleRows.sort((a, b) => {
+                    switch (sortOption) {
+                        case 'date_desc':
+                            return new Date(b.cells[1].textContent) - new Date(a.cells[1].textContent);
+                        case 'date_asc':
+                            return new Date(a.cells[1].textContent) - new Date(b.cells[1].textContent);
+                        case 'price_desc':
+                            return parseFloat(b.cells[3].textContent.replace('$', '')) - 
+                                   parseFloat(a.cells[3].textContent.replace('$', ''));
+                        case 'price_asc':
+                            return parseFloat(a.cells[3].textContent.replace('$', '')) - 
+                                   parseFloat(b.cells[3].textContent.replace('$', ''));
+                        case 'quantity_desc':
+                            return parseInt(b.cells[2].textContent) - parseInt(a.cells[2].textContent);
+                        case 'quantity_asc':
+                            return parseInt(a.cells[2].textContent) - parseInt(b.cells[2].textContent);
+                        default:
+                            return 0;
+                    }
+                });
+                
+                // Reorder the table
+                visibleRows.forEach(row => {
+                    tbody.appendChild(row);
+                    
+                    // Keep expandable rows with their parent rows
+                    const batchNumber = row.getAttribute('data-batch-id');
+                    if (batchNumber) {
+                        const expandableRow = document.querySelector(`.expandable-row[data-batch="${batchNumber}"]`);
+                        if (expandableRow) {
+                            tbody.appendChild(expandableRow);
+                        }
+                    }
+                });
+            }
+            
+            // Event listeners
+            statusFilter.addEventListener('change', applyFilters);
+            sortFilter.addEventListener('change', applyFilters);
+            searchInput.addEventListener('input', applyFilters);
+            
+            // Initialize with default filters
+            applyFilters();
+        }
+
+        // Initialize pagination
+        function initPagination() {
+            const rowsPerPage = 5;
+            const table = document.getElementById('batchesTable');
+            const pagination = document.getElementById('pagination');
+            
+            function updatePagination() {
+                const rows = Array.from(table.querySelectorAll('tbody tr:not(.expandable-row)'))
+                              .filter(row => row.style.display !== 'none');
+                
+                const pageCount = Math.ceil(rows.length / rowsPerPage);
+                
+                // Clear pagination
+                pagination.innerHTML = '';
+                
+                // Don't show pagination if only one page or no data
+                if (pageCount <= 1) {
+                    return;
+                }
+                
+                // Previous button
+                const prevBtn = document.createElement('div');
+                prevBtn.className = 'page-btn';
+                prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+                prevBtn.addEventListener('click', () => {
+                    const activePage = parseInt(pagination.querySelector('.page-btn.active').textContent);
+                    if (activePage > 1) {
+                        goToPage(activePage - 1);
+                    }
+                });
+                pagination.appendChild(prevBtn);
+                
+                // Page buttons
+                for (let i = 1; i <= pageCount; i++) {
+                    const pageBtn = document.createElement('div');
+                    pageBtn.className = 'page-btn';
+                    pageBtn.textContent = i;
+                    if (i === 1) {
+                        pageBtn.classList.add('active');
+                    }
+                    pageBtn.addEventListener('click', () => {
+                        goToPage(i);
+                    });
+                    pagination.appendChild(pageBtn);
+                }
+                
+                // Next button
+                const nextBtn = document.createElement('div');
+                nextBtn.className = 'page-btn';
+                nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                nextBtn.addEventListener('click', () => {
+                    const activePage = parseInt(pagination.querySelector('.page-btn.active').textContent);
+                    if (activePage < pageCount) {
+                        goToPage(activePage + 1);
+                    }
+                });
+                pagination.appendChild(nextBtn);
+                
+                // Show first page
+                goToPage(1);
+            }
+            
+            function goToPage(pageNumber) {
+                const rows = Array.from(table.querySelectorAll('tbody tr:not(.expandable-row)'))
+                              .filter(row => row.style.display !== 'none');
+                
+                // Update active button
+                const pageButtons = pagination.querySelectorAll('.page-btn');
+                pageButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.textContent == pageNumber) {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                // Hide all rows
+                rows.forEach(row => {
+                    row.classList.add('hidden');
+                    row.style.display = 'none';
+                    
+                    // Hide associated expandable row
+                    const batchNumber = row.getAttribute('data-batch-id');
+                    if (batchNumber) {
+                        const expandableRow = document.querySelector(`.expandable-row[data-batch="${batchNumber}"]`);
+                        if (expandableRow) {
+                            expandableRow.style.display = 'none';
+                        }
+                    }
+                });
+                
+                // Show rows for current page
+                const startIndex = (pageNumber - 1) * rowsPerPage;
+                const endIndex = startIndex + rowsPerPage;
+                
+                for (let i = startIndex; i < endIndex && i < rows.length; i++) {
+                    rows[i].classList.remove('hidden');
+                    rows[i].style.display = '';
+                }
+            }
+            
+            // Initialize pagination
+            updatePagination();
+            
+            // Make it globally accessible for filters
+            window.updatePagination = updatePagination;
+        }
+    </script>
+</body>
+</html>
