@@ -141,6 +141,9 @@ STATICFILES_DIRS = [
 MEDIA_URL = os.environ.get('MEDIA_URL', 'media/')
 MEDIA_ROOT = os.environ.get('MEDIA_ROOT', '/home/homabayconcretep/public_html/media')
 
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Authentication settings
